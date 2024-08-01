@@ -2,9 +2,11 @@ name: .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - '**'  
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - '**'  
   create:
     tags:
       - "*"
@@ -35,13 +37,13 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ScrapeBuddy.csproj --no-restore
+        run: dotnet build ScrapeBuddy.csproj --runtime linux-x64
       - name: Upload Build Artifacts
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
         with:
           name: ScrapeBuddy-linux-${{ github.ref_name }}
-          path: bin/Debug/net8.0/
+          path: bin/Debug/net8.0/linux-x64/
   
   build-windows:
     runs-on: ubuntu-latest
@@ -55,7 +57,7 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ScrapeBuddy.csproj --runtime win-x64  --no-restore
+        run: dotnet build ScrapeBuddy.csproj --runtime win-x64
       - name: Upload Build Artifacts
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
