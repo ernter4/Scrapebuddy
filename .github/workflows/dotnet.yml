@@ -95,7 +95,7 @@ jobs:
         with:
           name: ScrapeBuddy-linux-${{ env.TAG_NAME }}
           path: build-artifacts-linux
-      - uses: actions/checkout@v4
+      
       - name: Download Windows Build Artifacts
         uses: actions/download-artifact@v3
         with:
