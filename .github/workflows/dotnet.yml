@@ -75,12 +75,12 @@ jobs:
       - name: Install Doxygen
         run: sudo apt-get update && sudo apt-get install -y doxygen
       - name: Generate Documentation
-        run: doxygen docs/Doxyfile.txt
+        run: doxygen Docs/Doxyfile.txt
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: Documentation
-          path: docs/html/*
+          path: Docs/html/*
   
   release:
     runs-on: ubuntu-latest
