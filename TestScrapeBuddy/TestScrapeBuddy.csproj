@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
@@ -21,7 +20,7 @@
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
-    <ProjectReference Include="../ScrapeBuddy.csproj" />
+    <ProjectReference Include="../ScrapeBuddy/ScrapeBuddy.csproj" />
     <Content Include="../Data/Database.db" />
   </ItemGroup>
 
