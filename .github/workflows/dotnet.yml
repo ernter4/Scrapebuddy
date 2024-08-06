@@ -22,6 +22,8 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore Dependencies
         run: dotnet restore
+      - name : Build for Test
+        run: dotnet build 
       - name: Test
         run: dotnet test
 
