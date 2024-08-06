@@ -20,8 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-  <Using Include="NUnit.Framework" />
-  <ProjectReference Include="../ScrapeBuddy.csproj" />
+    <Using Include="NUnit.Framework" />
+    <ProjectReference Include="../ScrapeBuddy.csproj" />
+    <Content Include="../Data/Database.db" />
   </ItemGroup>
 
 </Project>
