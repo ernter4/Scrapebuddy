@@ -39,7 +39,7 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ScrapeBuddy.csproj --runtime linux-x64
+        run: dotnet build ScrapeBuddy.csproj --runtime linux-x64 --no-restore 
       - name: Upload Build Artifacts
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
@@ -59,7 +59,7 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ScrapeBuddy.csproj --runtime win-x64
+        run: dotnet build ScrapeBuddy.csproj --runtime win-x64 --no-restore 
       - name: Upload Build Artifacts
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
