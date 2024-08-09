@@ -1,7 +1,7 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 
-namespace ScrapeBuddy.Scripts;
+namespace ScrapeBuddy.Logic;
 
 public class Selenium
 {

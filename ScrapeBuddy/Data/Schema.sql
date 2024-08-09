@@ -1,8 +1,10 @@
 -- Create the `users` table
 CREATE TABLE IF NOT EXISTS users (
                                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                     username TEXT,
-                                     password TEXT,
+                                     username BLOB,
+                                     password BLOB,
+                                     salt BLOB,
+                                     IV BLOB,
                                      website_id INTEGER
 );
 
@@ -14,3 +16,4 @@ CREATE TABLE IF NOT EXISTS website_content (
                                                element_id TEXT,
                                                content TEXT
 );
+

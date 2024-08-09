@@ -1,4 +1,4 @@
-using ScrapeBuddy.Scripts;
+using ScrapeBuddy.Logic;
 namespace TestScrapeBuddy;
 
 public class SeleniumTest

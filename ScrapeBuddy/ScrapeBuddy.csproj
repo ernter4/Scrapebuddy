@@ -14,7 +14,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets/*" />
     <Content Include="Data/Database.db">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <PackageReference Include="Avalonia" Version="11.0.10" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />

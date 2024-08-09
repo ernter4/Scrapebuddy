@@ -1,5 +1,7 @@
+using System;
 using System.Data;
 using Microsoft.Data.Sqlite;
+using ScrapeBuddy.Logic;
 
 namespace ScrapeBuddy.Data
 {
@@ -9,43 +11,65 @@ namespace ScrapeBuddy.Data
     public class DatabaseHandler
     {
         private readonly string _connectionString;
+        public string websiteName;
+        public string xPath;
+        public string elementId;
+        public string content;
+        public string? username;
+        public string? password;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseHandler"/> class.
         /// </summary>
         /// <param name="databaseFilePath">Path to the SQLite database file.</param>
-        public DatabaseHandler(string databaseFilePath)
+        /// <param name="websiteName">The name of the website.</param>
+        /// <param name="xPath">The XPath of the content element.</param>
+        /// <param name="elementId">The ID of the content element.</param>
+        /// <param name="content">The content to be stored.</param>
+        /// <param name="username">The username for the user record.</param>
+        /// <param name="password">The password for the user record.</param>
+        public DatabaseHandler(string databaseFilePath, string websiteName, string xPath, string elementId, string content, string username, string password)
         {
             _connectionString = $"Data Source={databaseFilePath};";
+            this.websiteName = websiteName;
+            this.xPath = xPath;
+            this.elementId = elementId;
+            this.content = content;
+            this.username = username;
+            this.password = password;
         }
 
         /// <summary>
         /// Creates a new user record in the database.
         /// </summary>
-        /// <param name="username">The username of the new user.</param>
-        /// <param name="password">The password of the new user.</param>
         /// <param name="websiteId">The ID of the associated website.</param>
-        public void CreateUser(string username, string password, int websiteId)
+        public void CreateUser(int websiteId)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
-                var command = new SqliteCommand("INSERT INTO users (username, password, website_id) VALUES (@username, @password, @website_id)", connection);
-                command.Parameters.AddWithValue("@username", username);
-                command.Parameters.AddWithValue("@password", password);
+        
+                // Correct SQL command with appropriate placeholders
+                string key = "key";
+                Encryption enc = new Encryption(username!, password!, key);
+                var result = enc.EncryptStringToBytes_Aes();
+
+                var command = new SqliteCommand("INSERT INTO users (username, password, salt, IV, website_id) VALUES (@username, @password, @salt, @IV, @website_id)", connection);
+                command.Parameters.AddWithValue("@username", username ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@password", password ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@salt", result.salt);
+                command.Parameters.AddWithValue("@IV", result.IV);
                 command.Parameters.AddWithValue("@website_id", websiteId);
+        
                 command.ExecuteNonQuery();
-            }
+            } 
         }
 
         /// <summary>
         /// Creates a new website content record in the database.
         /// </summary>
-        /// <param name="websiteName">The name of the website.</param>
-        /// <param name="xPath">The XPath of the content element.</param>
-        /// <param name="elementId">The ID of the content element.</param>
-        /// <param name="content">The content to be stored.</param>
-        public void CreateWebsiteContent(string websiteName, string xPath, string elementId, string content)
+        /// <returns>The ID of the newly inserted website content record.</returns>
+        public int CreateWebsiteContent()
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
@@ -56,6 +80,11 @@ namespace ScrapeBuddy.Data
                 command.Parameters.AddWithValue("@elementId", elementId);
                 command.Parameters.AddWithValue("@content", content);
                 command.ExecuteNonQuery();
+
+                // Retrieve the last inserted ID
+                var lastInsertIdCommand = new SqliteCommand("SELECT last_insert_rowid()", connection);
+                int insertedId = Convert.ToInt32(lastInsertIdCommand.ExecuteScalar());
+                return insertedId;
             }
         }
 
