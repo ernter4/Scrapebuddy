@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ScrapeBuddy.LoadingWindow"
+        Title="ScrapeBuddy"
+        Width="500" Height="500"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False" 
+        CanResize="False"
+        Topmost="True"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="0">
+    <Panel Background="#1e1e1e">
+
+
+        <StackPanel Spacing="20"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+
+            <Image Source="/Assets/logo.ico"
+                   Width="150"
+                   Height="150"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"/>
+
+            <TextBlock Text="ScrapeBuddy"
+                       FontSize="48"
+                       Foreground="White" />
+
+            <ProgressBar Name="ProgressBar1"
+                         MaxWidth="200"
+                         Height="10"
+                         BorderBrush="Violet" BorderThickness="1"
+                         Margin="0 10 0 0"/>
+
+            <TextBlock Text="Loading..."
+                       Name="LoadingText"
+                       HorizontalAlignment="Center"
+                       FontSize="20"
+                       Foreground="White"/>
+
+        </StackPanel>
+
+    </Panel>
+ 
+</Window>

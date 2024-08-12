@@ -33,14 +33,9 @@
 
 
   <ItemGroup>
-    <Compile Update="Views\MainWindow.axaml.cs">
+    <Compile Update="ViewModels\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 </Project>
