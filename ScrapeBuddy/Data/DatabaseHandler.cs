@@ -38,6 +38,8 @@ namespace ScrapeBuddy.Data
             this.username = username;
             this.password = password;
         }
+        
+        public DatabaseHandler() {}
 
         /// <summary>
         /// Creates a new user record in the database.
@@ -101,6 +103,28 @@ namespace ScrapeBuddy.Data
             {
                 connection.Open();
                 var command = new SqliteCommand($"SELECT * FROM {tableName}", connection);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    resultTable.Load(reader);
+                }
+            }
+
+            return resultTable;
+        }
+        
+        /// <summary>
+        /// Gets all registered websites of a user
+        /// </summary>
+        /// <returns>Datable containing one column with all websites</returns>
+        public DataTable GetAllWebsites()
+        {
+            var resultTable = new DataTable();
+
+            using (var connection = new SqliteConnection($"Data Source=Data/Database.db;"))
+            {
+                connection.Open();
+                var command = new SqliteCommand($"SELECT website_name FROM website_content", connection);
 
                 using (var reader = command.ExecuteReader())
                 {

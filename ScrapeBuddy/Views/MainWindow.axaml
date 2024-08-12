@@ -2,8 +2,55 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ScrapeBuddy.Models"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="ScrapeBuddy.MainWindow"
-        Title="ScrapeBuddy">
-    Welcome to Avalonia!
+        x:Class="ScrapeBuddy.Views.MainWindow"
+        Title="ScrapeBuddy"
+        x:DataType="vm:Websites">
+    <Window.DataContext>
+        <vm:Websites />
+    </Window.DataContext>
+    
+    <Grid> 
+        
+        <!-- Linke Spalte -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/> <!-- Breite der linken Spalte -->
+            <ColumnDefinition Width="*"/> <!-- Hauptinhalt -->  
+        </Grid.ColumnDefinitions>
+        
+
+        <!-- Linke Seitenleiste -->
+        <DockPanel Grid.Column="0"  Background="Orange">
+            <!-- Benachrichtigungssymbole oben -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Background="Beige">
+                <Button Classes="" Content="🔔" Margin="5"/>
+                <Button Content="⚙" Margin="5"/>
+            </StackPanel>
+            
+            <!-- Logo und Schaltflächen -->
+            <StackPanel DockPanel.Dock="Top" Margin="10" Background="Aqua" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="ScrapeBuddy"
+                           FontWeight="Bold" 
+                           FontSize="30" 
+                           Margin="0,20,0,20"   
+                           TextAlignment="Center"/>
+                <Button Content="+ create new" Width="200" Height="40" FontWeight="Heavy" Margin="0,10,0,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <TextBox Watermark=" Search" Width="200" Height="40" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Websites -->
+            <ScrollViewer DockPanel.Dock="Bottom" Margin="10" Background="Blue">
+                <ListBox ItemsSource="{Binding Sites}"></ListBox>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Browser -->
+        <Border Grid.Column="1" Background="White">
+        </Border>
+    </Grid> 
+
+    
+    
+     
 </Window>
