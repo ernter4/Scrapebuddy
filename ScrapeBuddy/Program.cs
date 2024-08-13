@@ -1,23 +1,34 @@
 ﻿using Avalonia;
 using System;
 
-namespace ScrapeBuddy;
-
-class Program
+namespace ScrapeBuddy
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    /// <summary>
+    /// The entry point for the ScrapeBuddy application.
+    /// </summary>
+    class Program
+    {
+        /// <summary>
+        /// The main method for the application. Initializes the Avalonia application and starts the desktop lifetime.
+        /// </summary>
+        /// <param name="args">Command-line arguments passed to the application.</param>
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        }
 
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();
+        /// <summary>
+        /// Configures the Avalonia application.
+        /// </summary>
+        /// <returns>An <see cref="AppBuilder"/> instance configured for the application.</returns>
+        public static AppBuilder BuildAvaloniaApp()
+        {
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .LogToTrace();
+        }
+    }
 }
-
- 

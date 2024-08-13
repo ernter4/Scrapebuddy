@@ -1,79 +1,82 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using OpenQA.Selenium.DevTools.V125.IndexedDB;
 
-namespace ScrapeBuddy.Logic;
-
-public class Selenium
+namespace ScrapeBuddy.Logic
 {
-    private IWebDriver _driver;
-    /*!
-     * \brief constructor of class.
-     *
-     */
-    public Selenium(string url)
+    /// <summary>
+    /// Provides methods for interacting with web pages using Selenium WebDriver.
+    /// </summary>
+    public class Selenium
     {
-        var options = new ChromeOptions();
-        options.AddArgument("--disable-search-engine-choice-screen");
-        options.AddArgument("--headless"); // Add headless mode
-        options.AddArgument("--no-sandbox");
-        options.AddArgument("--disable-dev-shm-usage");
-        _driver = new ChromeDriver(options);
+        /// <summary>
+        /// The WebDriver instance used for interacting with web pages.
+        /// </summary>
+        private IWebDriver _driver;
 
-        _driver.Navigate().GoToUrl(url);
-    } 
-    /*!
-     * \brief returns Element specified by XPath.
-     * \param xpath The XPath by wich an Element can be identified.
-     */
-    public  IWebElement GetElementByXPath(string xpath)
-    {
-        return _driver.FindElement(By.XPath(xpath));
-    }
-    /*!
-     * \brief returns Element specified by ID.
-     * \param id The id by wich an Element can be identified.
-     */
-    public  IWebElement GetElementById(string id)
-    {
-        return _driver.FindElement(By.Id(id));
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Selenium"/> class and navigates to the specified URL.
+        /// </summary>
+        /// <param name="url">The URL to navigate to upon initialization.</param>
+        public Selenium(string url)
+        {
+            var options = new ChromeOptions();
+            options.AddArgument("--disable-search-engine-choice-screen");
+            options.AddArgument("--headless"); // Runs Chrome in headless mode, without a GUI.
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
+            _driver = new ChromeDriver(options);
 
-    
-    /*!
-     * \brief Logs into an Website by autocomplete feature 
-     * \param username  A String used for authanticating.
-     * \param password A String used to authenticate user.
-     * \param bool Decides if password and username can be filled in at the same Time. Some Websites as Google only show the password field after you inserted the username. 
-     */
-    public void login(string username, string password, bool multiple)
-    {
-        
-        IWebElement usernamefield = _driver.FindElement(By.CssSelector("[autocomplete='username']"));
-        IWebElement passwordfield;
-       usernamefield.SendKeys(username);
-       if (multiple)
-       {
-           usernamefield.SendKeys(Keys.Return);
-           
-       }
-       passwordfield = _driver.FindElement(By.CssSelector("[autocomplete='current-password']"));
-       
-       passwordfield.SendKeys(password);
-       
-       passwordfield.SendKeys(Keys.Return);
-       
-       
-    }
-    
-    /*
-    * \brief quits the browser.
+            _driver.Navigate().GoToUrl(url);
+        }
 
-    */
-    public void Quit()
-    {
-        _driver.Quit();
+        /// <summary>
+        /// Retrieves a web element by its XPath.
+        /// </summary>
+        /// <param name="xpath">The XPath of the web element to find.</param>
+        /// <returns>The web element found by the specified XPath.</returns>
+        public IWebElement GetElementByXPath(string xpath)
+        {
+            return _driver.FindElement(By.XPath(xpath));
+        }
+
+        /// <summary>
+        /// Retrieves a web element by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the web element to find.</param>
+        /// <returns>The web element found by the specified ID.</returns>
+        public IWebElement GetElementById(string id)
+        {
+            return _driver.FindElement(By.Id(id));
+        }
+
+        /// <summary>
+        /// Performs a login action on the web page.
+        /// </summary>
+        /// <param name="username">The username to be used for login.</param>
+        /// <param name="password">The password to be used for login.</param>
+        /// <param name="multiple">Indicates whether multiple steps are required for login (e.g., 1-step login).</param>
+        public void login(string username, string password, bool multiple)
+        {
+            IWebElement usernamefield = _driver.FindElement(By.CssSelector("[autocomplete='username']"));
+            IWebElement passwordfield;
+
+            usernamefield.SendKeys(username);
+            if (multiple)
+            {
+                usernamefield.SendKeys(Keys.Return); // Proceeds to the next step if multiple steps are required.
+            }
+
+            passwordfield = _driver.FindElement(By.CssSelector("[autocomplete='current-password']"));
+            passwordfield.SendKeys(password);
+            passwordfield.SendKeys(Keys.Return); // Submits the login form.
+        }
+
+        /// <summary>
+        /// Closes the WebDriver and quits the browser session.
+        /// </summary>
+        public void Quit()
+        {
+            _driver.Quit();
+        }
     }
-    
 }
-
