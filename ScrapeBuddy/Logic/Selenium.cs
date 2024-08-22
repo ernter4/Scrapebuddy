@@ -4,8 +4,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.Collections.Generic;
 using System.Linq;
-
-
+using ScrapeBuddy.Error;
 namespace ScrapeBuddy.Logic
 {
     /// <summary>
@@ -69,19 +68,29 @@ namespace ScrapeBuddy.Logic
         {
             IWebElement passwordfield;
             IWebElement usernamefield;
-                
-            usernamefield = Getusernamefields()[0];// gets First Field where the username should be pasted in.
-            usernamefield.SendKeys(username);
+            List<IWebElement> usernamefields;
             List<IWebElement> passwordfields = Getpasswordfields();
-            if (passwordfields.Any()==false)
+            usernamefields = Getusernamefields();
+            if (usernamefields.Any() == false)
             {
-             usernamefield.SendKeys(Keys.Return);
-             passwordfield = Getpasswordfields()[0];
+                throw new MissingPasswordfieldException("No Usernamefield found");
             }
-            else
+            usernamefield = usernamefields[0];// gets First Field where the username should be pasted in.
+            usernamefield.SendKeys(username);
+
+            if (passwordfields.Any() == false)
             {
-                passwordfield = passwordfields[0];
+                usernamefield.SendKeys(Keys.Return);
+                passwordfields = Getpasswordfields();
             }
+            
+            if (passwordfields.Any() == false)
+            {
+                 throw new MissingPasswordfieldException("No Passwordfield found");
+            }
+
+            passwordfield = passwordfields[0];
+            
             passwordfield.SendKeys(password);
             passwordfield.SendKeys(Keys.Return);
             

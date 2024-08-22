@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using ScrapeBuddy.Logic;
 namespace TestScrapeBuddy;
-
+using ScrapeBuddy.Error;
 public class SeleniumTests
 {
     private Selenium? _driver;
@@ -55,10 +55,24 @@ public class SeleniumTests
             "Mu@EPxHKF$BZ%oiNyfcdX3");
         Assert.That("Ask Question",Is.EqualTo(element.Text));
         _driver.Quit();
-        
-
-
-
+    }
+    [Test]
+    public void Exception()
+    {
+        _driver = new Selenium();
+        try
+        {
+            _driver.Scrape("https://www.google.com", true, "test", "test", "test", "test");
+            
+        }
+        catch(LoginException e)
+        {
+            if (e is MissingUsernamefieldException)
+            {
+                Assert.That("No Usernamefield found",Is.EqualTo(e.Message));
+            }
+        }
+        _driver.Quit();
     }
 }
 
