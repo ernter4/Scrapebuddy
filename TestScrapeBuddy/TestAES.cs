@@ -15,9 +15,12 @@ public class AESTest
     public string password = "password";
     
     [Test]
-    public void TestEncryption()
+    public async Task TestEncryption()
     {
-        Encryption enc = new Encryption(username, password, key);
+        Hashing hash = new Hashing("password");
+        await hash.GenerateHashAsync();
+        hash.StoreMasterKey();
+        Encryption enc = new Encryption(username, password);
         
         var resultEnc = enc.EncryptStringToBytes_Aes();
         salt = resultEnc.salt;
@@ -33,7 +36,7 @@ public class AESTest
         Assert.That(resultEnc.encUsername, Is.Not.EqualTo("username"));
         Assert.That(resultEnc.encPassword, Is.Not.EqualTo("password"));
         
-        Decryption dec = new Decryption(encUsername, encPassword, key, salt, IV);
+        Decryption dec = new Decryption(encUsername, encPassword,  salt, IV);
         var resultDec = dec.DecryptStringFromBytes_Aes();
         
         Console.WriteLine($"Username: {resultDec.username} \n"); 

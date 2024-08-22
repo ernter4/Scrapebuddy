@@ -25,12 +25,11 @@ public class Encryption
     /// </summary>
     /// <param name="username">The username to encrypt.</param>
     /// <param name="password">The password to encrypt.</param>
-    /// <param name="key">The encryption key.</param>
-    public Encryption(string username, string password, string key)
+    public Encryption(string username, string password)
     {
         this.username = username;
         this.password = password;
-        this._key = key; 
+        this._key = Hashing.GetMasterKey(); 
     }
 
     /// <summary>

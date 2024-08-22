@@ -7,39 +7,46 @@ using System.Security;
 namespace ScrapeBuddy.Logic
 {
     /// <summary>
-    /// The Hashing class provides methods to generate and verify password hashes
-    /// and securely store and retrieve a master key using SecureString.
+    /// The Hashing class provides methods to generate and verify password hashes,
+    /// including the use of salting, and securely store and retrieve a master key using SecureString.
     /// </summary>
     public class Hashing
     {
         private string? _passwordHash;
-        private string _password;
+        private readonly string _password;
         private static SecureString? _masterKey;
+        private readonly string _salt;
 
         /// <summary>
         /// Initializes a new instance of the Hashing class with the specified password.
+        /// A random salt is generated for additional security.
         /// </summary>
         /// <param name="password">The password to be hashed and used for storing the master key.</param>
         public Hashing(string password)
         {
             this._password = password;
+            this._salt = BCrypt.Net.BCrypt.GenerateSalt(); // Generate a new salt
         }
 
         /// <summary>
-        /// Asynchronously generates a hash of the password and writes it to a configuration file.
+        /// Asynchronously generates a hash of the password with the salt and writes it to a configuration file.
+        /// The salt is stored alongside the hash.
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task GenerateHashAsync()
         {
             string docPath = "Data";
             string filePath = Path.Combine(docPath, "ScrapeBuddy.conf");
-            string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(_password);
+            
+            string passwordWithSalt = _password + _salt;
+            string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordWithSalt);
             
             Directory.CreateDirectory(docPath);
 
             try
             {
-                await File.WriteAllTextAsync(filePath, passwordHash);
+                // Save both the salt and the hash, separated by a colon
+                await File.WriteAllTextAsync(filePath, $"{_salt}:{passwordHash}");
             }
             catch (Exception ex)
             {
@@ -55,8 +62,20 @@ namespace ScrapeBuddy.Logic
         {
             bool verify;
             using StreamReader reader = new("Data/ScrapeBuddy.conf");
-            _passwordHash = reader.ReadToEnd();
-            verify = BCrypt.Net.BCrypt.EnhancedVerify(_password, _passwordHash);
+            string fileContent = reader.ReadToEnd();
+
+            // Split the stored value into salt and hash
+            var parts = fileContent.Split(':');
+            if (parts.Length != 2)
+            {
+                throw new InvalidOperationException("The stored password hash is in an invalid format.");
+            }
+
+            string storedSalt = parts[0];
+            string storedHash = parts[1];
+
+            string passwordWithStoredSalt = _password + storedSalt;
+            verify = BCrypt.Net.BCrypt.EnhancedVerify(passwordWithStoredSalt, storedHash);
             return verify;
         }
 

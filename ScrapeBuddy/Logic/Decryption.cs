@@ -21,16 +21,15 @@ public class Decryption
     /// </summary>
     /// <param name="encUsername">The encrypted username.</param>
     /// <param name="encPassword">The encrypted password.</param>
-    /// <param name="key">The encryption key.</param>
     /// <param name="salt">The salt used for key derivation.</param>
     /// <param name="IV">The initialization vector used for encryption.</param>
-    public Decryption(byte[] encUsername, byte[] encPassword, string key, byte[] salt, byte[] IV )
+    public Decryption(byte[] encUsername, byte[] encPassword,  byte[] salt, byte[] IV )
     {
         this._encUsername = encUsername;
         this._encPassword = encPassword;
         this._salt = salt;
         this._IV = IV;
-        this._key = key;
+        this._key = Hashing.GetMasterKey(); 
     }
 
     /// <summary>

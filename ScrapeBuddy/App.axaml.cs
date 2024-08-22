@@ -1,9 +1,12 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ScrapeBuddy.Views;
 using System.IO;
+using ScrapeBuddy.Logic;
+
 
 namespace ScrapeBuddy
 {
@@ -29,6 +32,7 @@ namespace ScrapeBuddy
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                desktop.Exit += OnExit;
                 Window initialWindow;
 
                 if (PassphraseExists())
@@ -46,6 +50,19 @@ namespace ScrapeBuddy
                 base.OnFrameworkInitializationCompleted();
             } 
         }
+
+        /// <summary>
+        /// Handles the application's exit event. Clears the master key if it exists.
+        /// </summary>
+        /// <param name="sender">The source of the event. Typically the application itself.</param>
+        /// <param name="e">Event arguments associated with the application's exit event.</param>
+        private void OnExit(object sender, ControlledApplicationLifetimeExitEventArgs e)
+        {
+            string? key = Hashing.GetMasterKey();
+            if (key != null){
+                Hashing.ClearMasterKey();
+           }
+        } 
 
         /// <summary>
         /// Checks if a passphrase exists by verifying the presence and content of the configuration file.

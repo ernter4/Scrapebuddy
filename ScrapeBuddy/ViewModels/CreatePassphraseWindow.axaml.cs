@@ -41,7 +41,8 @@ namespace ScrapeBuddy
                 {
                     Hashing hash = new Hashing(password);
                     await hash.GenerateHashAsync();
-
+                    hash.StoreMasterKey();
+                    
                     var splashScreen = new LoadingWindow();
                     splashScreen.Show();
                     Close();
