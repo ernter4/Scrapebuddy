@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ScrapeBuddy
+namespace ScrapeBuddy.ViewModels
 {
     /// <summary>
     /// Window for confirmation to reset the passphrase.

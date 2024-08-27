@@ -2,8 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Threading.Tasks;
 using System;
-
-namespace ScrapeBuddy
+namespace ScrapeBuddy.ViewModels
 {
     /// <summary>
     /// Represents a window that displays a loading screen with a progress bar.

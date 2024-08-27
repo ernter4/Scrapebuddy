@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:ScrapeBuddy.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ScrapeBuddy.ViewModels.RegisteredWebsite"
+             x:DataType="local:RegisteredWebsite">
+    
+    <UserControl.Resources>
+        <StreamGeometry x:Key="home_regular">M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H32.075C29.9625 43 28.25 41.2599 28.25 39.1134V29.7492C28.25 29.0337 27.6792 28.4536 26.975 28.4536H21.025C20.3208 28.4536 19.75 29.0337 19.75 29.7492V39.1134C19.75 41.2599 18.0375 43 15.925 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H15.925C16.6292 40.4089 17.2 39.8289 17.2 39.1134V29.7492C17.2 27.6027 18.9125 25.8626 21.025 25.8626H26.975C29.0875 25.8626 30.8 27.6027 30.8 29.7492V39.1134C30.8 39.8289 31.3708 40.4089 32.075 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z</StreamGeometry>
+        <StreamGeometry x:Key="edit_off_regular">M8.93944 10.0001L2.21979 3.28027C1.9269 2.98737 1.9269 2.5125 2.2198 2.21961C2.51269 1.92672 2.98757 1.92672 3.28046 2.21962L21.7802 20.7198C22.0731 21.0127 22.0731 21.4875 21.7802 21.7804C21.4873 22.0733 21.0125 22.0733 20.7196 21.7804L14 15.0608L9.0621 19.9987C8.78522 20.2756 8.44089 20.4754 8.06312 20.5784L2.94743 21.9736C2.38756 22.1263 1.87383 21.6126 2.02652 21.0527L3.42171 15.937C3.52474 15.5593 3.72456 15.2149 4.00144 14.9381L8.93944 10.0001ZM12.9392 13.9999L10.0001 11.0607L5.0621 15.9987C4.96981 16.091 4.9032 16.2058 4.86886 16.3317L3.81901 20.1811L7.66845 19.1313C7.79437 19.097 7.90915 19.0303 8.00144 18.9381L12.9392 13.9999Z M17.9393 8.99963L15.0598 11.8793L16.1207 12.9401L21.0304 8.03039C22.4279 6.63293 22.4279 4.36719 21.0304 2.96973C19.633 1.57227 17.3672 1.57227 15.9698 2.96973L11.0601 7.87943L12.1207 8.94013L15.0003 6.06063L17.9393 8.99963ZM17.0304 4.03039C17.8421 3.21871 19.1581 3.21871 19.9698 4.03039C20.7814 4.84206 20.7814 6.15805 19.9698 6.96973L18.9993 7.93963L16.0603 4.99963L17.0304 4.03039Z</StreamGeometry>
+        <StreamGeometry x:Key="edit_regular">M27.3138 4.68622C28.8759 6.24832 28.8759 8.78098 27.3138 10.3431L12.5409 25.116C11.9001 25.7568 11.0972 26.2114 10.218 26.4312L5.63602 27.5767C4.90364 27.7598 4.24025 27.0964 4.42335 26.364L5.56885 21.782C5.78864 20.9028 6.24323 20.0999 6.88402 19.4591L21.6569 4.68622C23.219 3.12412 25.7517 3.12412 27.3138 4.68622ZM20.2426 8.92865L8.29824 20.8734C7.91376 21.2578 7.641 21.7396 7.50913 22.2671L6.76786 25.2322L9.73295 24.4909C10.2604 24.359 10.7422 24.0863 11.1267 23.7018L23.0706 11.7566L20.2426 8.92865ZM23.0712 6.10043L21.6566 7.51465L24.4846 10.3426L25.8996 8.92886C26.6806 8.14781 26.6806 6.88148 25.8996 6.10043C25.1185 5.31939 23.8522 5.31939 23.0712 6.10043Z</StreamGeometry>
+    </UserControl.Resources>
+    
+    <UserControl.Styles>
+        <Style Selector="ToggleButton PathIcon.audio-on">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="ToggleButton:checked PathIcon.audio-on">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="ToggleButton PathIcon.audio-mute">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="ToggleButton:checked PathIcon.audio-mute">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        
+        <Style Selector="Button.ToggleButton">
+            <Setter Property="Background" Value="#f5f7fa"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1.2"/>    
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="-1,0,-1,0"/>
+        </Style>
+
+        <Style Selector="Button.ToggleButton:pressed">
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#007ACC"/>
+        </Style>
+
+        <Style Selector="Button.LeftToggle">
+            <Setter Property="CornerRadius" Value="15,0,0,15"/>
+        </Style>
+    
+        <Style Selector="Button.RightToggle">
+            <Setter Property="CornerRadius" Value="0,15,15,0"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid RowDefinitions="Auto, Auto, Auto">
+        <!-- cancel and info -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Background="Aqua">
+            <Button Grid.Column="0" IsCancel="True" Click="OnCancelView" Height="35">
+                <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform"></Path>
+            </Button>
+            <ToggleButton x:Name="EditBtn" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="ClearAllFields" Height="35">
+                <Panel>
+                    <PathIcon Classes="audio-on" Data="{StaticResource edit_off_regular}"></PathIcon>
+                    <PathIcon Classes="audio-mute" Data="{StaticResource edit_regular}"></PathIcon>
+                </Panel>
+            </ToggleButton>
+        </Grid>
+        
+        <!-- Website -->
+        <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" Background="PaleGreen">
+            <TextBox Grid.Column="1" Grid.Row="1" Watermark="Website Name" x:Name="WebsiteNameTextBox" IsEnabled="{Binding IsEditable}" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,0"/>
+            <TextBox Grid.Column="1" Grid.Row="3" Watermark="Website Link" x:Name="WebsiteLinkTextBox" IsEnabled="{Binding IsEditable}" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,10"/>
+            <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,15,0,0">
+                <Button x:Name="IdButton" Content="ID" Click="OnIDClicked"
+                        Classes="ToggleButton LeftToggle" />
+                <Button x:Name="XPathButton" Content="XPath" Click="OnXPathClicked"
+                        Classes="ToggleButton RightToggle" />
+            </StackPanel>
+            <TextBox Grid.Column="1" Grid.Row="7" x:Name="PathToElementTextBox" Watermark="Id" Width="200" Height="20" VerticalContentAlignment="Center" IsEnabled="{Binding IsEditable}" Margin="0,5,0,5"/>
+            <Grid Grid.Column="1" Grid.Row="9" DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" IsVisible="{Binding NeedsCredentials}" Margin="0,10,0,30">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Credentials"/>
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="UsernameTextBox" Watermark="Username" IsEnabled="{Binding IsEditable}"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="2" x:Name="PasswordTextBox" Watermark="Password" IsEnabled="{Binding IsEditable}" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
+            </Grid>
+        </Grid>
+        
+        <!-- scrape and save -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" Background="Aqua">
+            <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="PrintAllVariables">
+            </Button>
+            <StackPanel Grid.Column="3">
+                <Button x:Name="SaveBtn"  Content="Save" Command="{Binding WriteUserInputsToDatabase}" />
+                <ToolTip.Tip>
+                    <TextBlock>Conditions for content to be savable</TextBlock>
+                </ToolTip.Tip>
+            </StackPanel>
+            
+        </Grid>
+    </Grid>
+    
+</UserControl>

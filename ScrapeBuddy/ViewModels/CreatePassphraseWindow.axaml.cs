@@ -5,9 +5,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ScrapeBuddy.Logic;
-using ScrapeBuddy.Views;
+using ScrapeBuddy.ViewModels;
 
-namespace ScrapeBuddy
+namespace ScrapeBuddy.ViewModels
 {
     /// <summary>
     /// Represents the window for creating a new passphrase.
@@ -49,13 +49,12 @@ namespace ScrapeBuddy
 
                     await splashScreen.InitApp();
 
-                    var main = new MainWindow
+                    var mainWindow = new MainWindow
                     {
                         DataContext = new MainWindow(),
                     };
-
-                    var mainWindow = new MainWindow();
                     mainWindow.Show();
+                    
                     Close();
 
                     splashScreen.Close();

@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="ScrapeBuddy.CreatePassphraseWindow"
+        x:Class="ScrapeBuddy.ViewModels.CreatePassphraseWindow"
         Title="Create Passphrase"
         Width="500" Height="500">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">

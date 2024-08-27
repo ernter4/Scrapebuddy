@@ -3,7 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ScrapeBuddy.Views;
+using ScrapeBuddy.ViewModels;
 using System.IO;
 using ScrapeBuddy.Logic;
 

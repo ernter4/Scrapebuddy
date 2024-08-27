@@ -5,11 +5,11 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using ScrapeBuddy.Data;
-using ScrapeBuddy.Views;
+using ScrapeBuddy.ViewModels;
 using ScrapeBuddy.Logic;
 using ScrapeBuddy.Exceptions;
 
-namespace ScrapeBuddy
+namespace ScrapeBuddy.ViewModels
 {
     /// <summary>
     /// Represents the login window where users can enter their credentials.

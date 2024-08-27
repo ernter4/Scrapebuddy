@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="ScrapeBuddy.LoginWindow"
+        x:Class="ScrapeBuddy.ViewModels.LoginWindow"
         Title="Login"
         Width="500" Height="500">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"> 
