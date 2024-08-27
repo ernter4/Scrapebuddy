@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using System.IO;
 
@@ -59,7 +60,8 @@ public class Decryption
         {
             aesAlg.Key = KDF(_key, _salt);
             aesAlg.IV = _IV;
-
+            aesAlg.Padding = PaddingMode.PKCS7;
+            
             ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
             using (MemoryStream msDecrypt = new MemoryStream(_encUsername))

@@ -61,7 +61,9 @@ public class Encryption
         {     
             aesAlg.GenerateIV();
             aesAlg.Key = kdf.Key;
-            IV = aesAlg.IV;  
+            IV = aesAlg.IV;
+            aesAlg.Padding = PaddingMode.PKCS7;
+            
             ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, IV);
 
             using (MemoryStream msEncrypt = new MemoryStream())

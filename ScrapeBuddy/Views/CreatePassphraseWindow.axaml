@@ -7,7 +7,7 @@
         <TextBlock Text="Enter Password:" Width="200" Margin="0,0,0,10"/>
         <TextBox x:Name="PasswordBox" Classes="revealPasswordButton" PasswordChar="*" Watermark="Enter your password" Width="200" Margin="0,0,0,5" TextChanged="PasswordBox_TextChanged"/>
         <TextBox x:Name="ConfirmPasswordBox" Classes="revealPasswordButton" PasswordChar="*" Watermark="Confirm your password" Width="200" Margin="0,0,0,10" TextChanged="Box_TextChanged"/>
-        <TextBlock x:Name="ErrorTextBlock" Foreground="Red" Margin="-1,10,0,0" IsVisible="False"/>
+        <TextBlock x:Name="ErrorTextBlock" FontSize="12" Foreground="Red" Margin="-1,10,0,0" IsVisible="False"/>
         <Button Content="Create New Password" Width="200" Click="OnCreateNewPasswordClick"/>
         
         <!-- Password Criteria -->

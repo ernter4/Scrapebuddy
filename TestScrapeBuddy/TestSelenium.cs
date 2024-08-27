@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using ScrapeBuddy.Logic;
 namespace TestScrapeBuddy;
-using ScrapeBuddy.Error;
+using ScrapeBuddy.Exceptions;
 public class SeleniumTests
 {
     private Selenium? _driver;
@@ -75,5 +75,3 @@ public class SeleniumTests
         _driver.Quit();
     }
 }
-
-

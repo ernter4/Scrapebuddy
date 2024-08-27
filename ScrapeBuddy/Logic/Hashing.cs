@@ -16,6 +16,7 @@ namespace ScrapeBuddy.Logic
         private readonly string _password;
         private static SecureString? _masterKey;
         private readonly string _salt;
+        static string filePath = @"Data/ScrapeBuddy.conf";
 
         /// <summary>
         /// Initializes a new instance of the Hashing class with the specified password.
@@ -34,14 +35,9 @@ namespace ScrapeBuddy.Logic
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task GenerateHashAsync()
-        {
-            string docPath = "Data";
-            string filePath = Path.Combine(docPath, "ScrapeBuddy.conf");
-            
+        { 
             string passwordWithSalt = _password + _salt;
-            string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordWithSalt);
-            
-            Directory.CreateDirectory(docPath);
+            string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordWithSalt); 
 
             try
             {
@@ -61,7 +57,7 @@ namespace ScrapeBuddy.Logic
         public bool Verify()
         {
             bool verify;
-            using StreamReader reader = new("Data/ScrapeBuddy.conf");
+            using StreamReader reader = new(filePath);
             string fileContent = reader.ReadToEnd();
 
             // Split the stored value into salt and hash
@@ -77,6 +73,16 @@ namespace ScrapeBuddy.Logic
             string passwordWithStoredSalt = _password + storedSalt;
             verify = BCrypt.Net.BCrypt.EnhancedVerify(passwordWithStoredSalt, storedHash);
             return verify;
+        }
+
+        /// <summary>
+        /// Delete Content from ScrapeBuddy.conf (Forgot Passphrase -> reset)
+        /// </summary>
+        public static void DeleteHash(){
+            using (var fs = new FileStream(filePath, FileMode.Truncate))
+            {
+                Console.WriteLine("Deleting Hash was successful");
+            }
         }
 
         /// <summary>

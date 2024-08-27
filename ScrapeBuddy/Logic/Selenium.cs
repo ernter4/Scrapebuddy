@@ -4,7 +4,9 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.Collections.Generic;
 using System.Linq;
-using ScrapeBuddy.Error;
+using System.Threading.Tasks;
+using ScrapeBuddy.Exceptions;
+using ScrapeBuddy.Data;
 namespace ScrapeBuddy.Logic
 {
     /// <summary>
@@ -35,7 +37,7 @@ namespace ScrapeBuddy.Logic
                 _driver.Navigate().GoToUrl(url);
             }
         }
-
+        
         /// <summary>
         /// Retrieves a web element by its XPath.
         /// </summary>
@@ -94,9 +96,8 @@ namespace ScrapeBuddy.Logic
             passwordfield.SendKeys(password);
             passwordfield.SendKeys(Keys.Return);
             
-            
-
         }
+        
         /// <summary>
         /// If necessary logs into a website, and returns the webelement at specified identifier
         /// </summary>
@@ -115,10 +116,7 @@ namespace ScrapeBuddy.Logic
             {
                 Login(username, password);
             }
-
             
-            
-           
             IWebElement element;
             if (xpath is null)
             {
@@ -173,15 +171,12 @@ namespace ScrapeBuddy.Logic
                  transfer = _driver.FindElements(By.Name(name));
                  foreach (var passwordfield in transfer)
                  {
-                     if (passwordfield.TagName == "input")// Only return input fields
+                     if (passwordfield.TagName == "input") // Only return input fields
                      {
-                         passwordfields.Insert(0,passwordfield);
+                         passwordfields.Insert(0, passwordfield);
                      }
                  }
-
-                 ;
              }
-
              return passwordfields;
         }
 
@@ -193,5 +188,50 @@ namespace ScrapeBuddy.Logic
             _driver.Close();
             _driver.Quit();
         }
+    }
+    
+    /// <summary>
+    /// Class which connects scraping logic with the database.
+    /// </summary>
+    public class Scrape
+    {
+        
+        /// <summary>
+        /// Scrapes items from the list retrieved from the database using Selenium. Create notifications and also update the database.
+        /// </summary>
+        /// <returns>
+        /// A completed <see cref="Task"/> after all items have been processed.
+        /// </returns>
+        public static async void ScrapeItems()
+        {
+            var scrapeContent = DatabaseHandler.GetScrapeContent();
+            foreach (var item in scrapeContent)
+            {
+                var selenium = new Selenium();
+                try
+                {
+                    IWebElement element = selenium.Scrape(item.url, item.login, item.xPath, item.elementId, item.username, item.password);
+                    if (element.Text == item.content)
+                    {
+                        Console.WriteLine($"Content is still the same: {element.Text} = {item.content}");
+                    } else {
+                        Console.WriteLine($"Content changed: {element.Text} != {item.content}");
+                        DatabaseHandler notification = new DatabaseHandler($"{item.name} had changes", $"Content changed from {item.content} to {element.Text}");
+                        notification.CreateNotification();
+                        DatabaseHandler.UpdateContent(item.id, element.Text);
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    DatabaseHandler notification = new DatabaseHandler($"Scraping for {item.name} failed: ", ex.Message);
+                    notification.CreateNotification();
+                    Console.WriteLine($"Scraping for {item.name} failed: ");
+                    Console.WriteLine(ex.Message);
+                }
+                selenium.Quit();
+            }
+            Console.WriteLine("Scraping complete");
+        }    
     }
 }

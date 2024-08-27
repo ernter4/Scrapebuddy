@@ -1,8 +1,9 @@
 ﻿using System;
 using Tmds.DBus.Protocol;
 
-namespace ScrapeBuddy.Error;
+namespace ScrapeBuddy.Exceptions;
 
+/// <summary>Represents a base exception for Selenium-related errors.</summary>
 public class SeleniumException:BaseException
 
 {
@@ -11,6 +12,7 @@ public class SeleniumException:BaseException
     public SeleniumException():base(){}
 }
 
+/// <summary>Represents an exception for login failures.</summary>
 public class LoginException : SeleniumException
 {
     public LoginException(string message, Exception innerException) : base(message, innerException) {}
@@ -19,6 +21,7 @@ public class LoginException : SeleniumException
 
 }
 
+/// <summary>Represents an exception for missing username field during login.</summary>
 public class MissingUsernamefieldException : LoginException
 
 {
@@ -27,6 +30,7 @@ public class MissingUsernamefieldException : LoginException
     public MissingUsernamefieldException() : base() {}
 }
 
+/// <summary>Represents an exception for missing password field during login.</summary>
 public class MissingPasswordfieldException : LoginException
 {
     public MissingPasswordfieldException(string message,Exception innerException):base(message,innerException) {}
