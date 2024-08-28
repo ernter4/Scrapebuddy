@@ -102,7 +102,7 @@ jobs:
           name: ScrapeBuddy-windows-${{ env.TAG_NAME }}
           path: build-artifacts-windows/
       - name: Make ScrapeBuddy executable (Linux)
-        run: chmod 777 build-artifacts-linux/ScrapeBuddy
+        run: chmod +x -R build-artifacts-linux/
       - name: Zip Binaries Linux
         run: |
           cd build-artifacts-linux/
