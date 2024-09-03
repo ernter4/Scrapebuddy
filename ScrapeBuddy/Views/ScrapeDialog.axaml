@@ -1,0 +1,10 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ScrapeBuddy.ViewModels.ScrapeDialog"
+        Title="Processing" Width="400" Height="200">
+        <StackPanel Margin="20">
+                <TextBlock Name="MessageTextBlock" Text="Processing..." FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <ProgressBar Name="LoadingProgressBar" IsIndeterminate="True" Height="20" Margin="10"/>
+                <Button Name="OkButton" Content="OK" HorizontalAlignment="Right" Margin="10" IsVisible="False" Click="OnOkClick"/>
+        </StackPanel>
+</Window>

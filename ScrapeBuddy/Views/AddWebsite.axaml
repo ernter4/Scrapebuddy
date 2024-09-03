@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:ScrapeBuddy.ViewModels"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="720"
-             x:Class="ScrapeBuddy.ViewModels.NewWebsite"
+             x:Class="ScrapeBuddy.ViewModels.AddWebsite"
              Padding="30"
-             x:DataType="local:NewWebsite">
+             x:DataType="local:AddWebsite">
     <UserControl.Resources>
         <StreamGeometry x:Key="home_regular">M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H32.075C29.9625 43 28.25 41.2599 28.25 39.1134V29.7492C28.25 29.0337 27.6792 28.4536 26.975 28.4536H21.025C20.3208 28.4536 19.75 29.0337 19.75 29.7492V39.1134C19.75 41.2599 18.0375 43 15.925 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H15.925C16.6292 40.4089 17.2 39.8289 17.2 39.1134V29.7492C17.2 27.6027 18.9125 25.8626 21.025 25.8626H26.975C29.0875 25.8626 30.8 27.6027 30.8 29.7492V39.1134C30.8 39.8289 31.3708 40.4089 32.075 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z</StreamGeometry>
         <StreamGeometry x:Key="delete_regular">M24,7.25 C27.1017853,7.25 29.629937,9.70601719 29.7458479,12.7794443 L29.75,13 L37,13 C37.6903559,13 38.25,13.5596441 38.25,14.25 C38.25,14.8972087 37.7581253,15.4295339 37.1278052,15.4935464 L37,15.5 L35.909,15.5 L34.2058308,38.0698451 C34.0385226,40.2866784 32.1910211,42 29.9678833,42 L18.0321167,42 C15.8089789,42 13.9614774,40.2866784 13.7941692,38.0698451 L12.09,15.5 L11,15.5 C10.3527913,15.5 9.8204661,15.0081253 9.75645361,14.3778052 L9.75,14.25 C9.75,13.6027913 10.2418747,13.0704661 10.8721948,13.0064536 L11,13 L18.25,13 C18.25,9.82436269 20.8243627,7.25 24,7.25 Z M33.4021054,15.5 L14.5978946,15.5 L16.2870795,37.8817009 C16.3559711,38.7945146 17.116707,39.5 18.0321167,39.5 L29.9678833,39.5 C30.883293,39.5 31.6440289,38.7945146 31.7129205,37.8817009 L33.4021054,15.5 Z M27.25,20.75 C27.8972087,20.75 28.4295339,21.2418747 28.4935464,21.8721948 L28.5,22 L28.5,33 C28.5,33.6903559 27.9403559,34.25 27.25,34.25 C26.6027913,34.25 26.0704661,33.7581253 26.0064536,33.1278052 L26,33 L26,22 C26,21.3096441 26.5596441,20.75 27.25,20.75 Z M20.75,20.75 C21.3972087,20.75 21.9295339,21.2418747 21.9935464,21.8721948 L22,22 L22,33 C22,33.6903559 21.4403559,34.25 20.75,34.25 C20.1027913,34.25 19.5704661,33.7581253 19.5064536,33.1278052 L19.5,33 L19.5,22 C19.5,21.3096441 20.0596441,20.75 20.75,20.75 Z M24,9.75 C22.2669685,9.75 20.8507541,11.1064548 20.7551448,12.8155761 L20.75,13 L27.25,13 C27.25,11.2050746 25.7949254,9.75 24,9.75 Z</StreamGeometry>
@@ -44,7 +44,7 @@
             <Button Grid.Column="0" IsCancel="True" Click="OnCancelView" Height="35">
                 <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
-            <Button Grid.Column="2" Height="35">
+            <Button Grid.Column="2" Height="35" Click="ClearFields">
                 <Path Data="{StaticResource delete_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
         </Grid>
@@ -61,7 +61,7 @@
             </StackPanel>
             <TextBox Grid.Column="1" Grid.Row="7" x:Name="PathToElementTextBox" Watermark="Id" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,5,0,0"/>
             <DockPanel Grid.Column="1" Grid.Row="9" Width="200">
-                <Button DockPanel.Dock="Top" x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Show Credentials" Margin="0,15,0,10"/>
+                <Button DockPanel.Dock="Top" x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Add Credentials" Margin="0,15,0,10"/>
                 <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
                     <TextBox Grid.Column="0" x:Name="UsernameTextBox" Watermark="Username" IsVisible="False"></TextBox>
                     <TextBox Grid.Column="2" x:Name="PasswordTextBox" Watermark="Password" IsVisible="False" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
@@ -71,10 +71,10 @@
         
         <!-- scrape and save -->
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" Background="Aqua">
-            <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="PrintAllVariables">
+            <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="Scrape">
             </Button>
             <StackPanel Grid.Column="3">
-                <Button x:Name="SaveBtn"  Content="Save" Command="{Binding WriteUserInputsToDatabase}" />
+                <Button x:Name="SaveBtn"  Content="Save" Click="WriteUserInputsToDatabase" />
                 <ToolTip.Tip>
                     <TextBlock>Conditions for content to be savable</TextBlock>
                 </ToolTip.Tip>

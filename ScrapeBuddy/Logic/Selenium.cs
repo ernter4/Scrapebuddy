@@ -23,15 +23,19 @@ namespace ScrapeBuddy.Logic
         /// Initializes a new instance of the <see cref="Selenium"/> class and navigates to the specified URL.
         /// </summary>
         /// <param name="url">The URL to navigate to upon initialization.</param>
-        public Selenium(string url= "")
+         public Selenium(string url = "")
         {
             var options = new ChromeOptions();
             options.AddArgument("--disable-search-engine-choice-screen");
             options.AddArgument("--headless"); // Runs Chrome in headless mode, without a GUI.
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
-            _driver = new ChromeDriver(options);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0.5);// if element is not reachable the driver tries for 2 secs befor failing.
+            
+            var service = ChromeDriverService.CreateDefaultService();
+            service.HideCommandPromptWindow = true; 
+
+            _driver = new ChromeDriver(service, options);
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0.5); // if element is not reachable the driver tries for 2 secs before failing.
             if (url != "")
             {
                 _driver.Navigate().GoToUrl(url);
@@ -226,8 +230,6 @@ namespace ScrapeBuddy.Logic
                 {
                     DatabaseHandler notification = new DatabaseHandler($"Scraping for {item.name} failed: ", ex.Message);
                     notification.CreateNotification();
-                    Console.WriteLine($"Scraping for {item.name} failed: ");
-                    Console.WriteLine(ex.Message);
                 }
                 selenium.Quit();
             }

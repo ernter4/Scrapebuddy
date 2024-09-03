@@ -368,15 +368,16 @@ namespace ScrapeBuddy.Data
         /// <summary>
         /// Gets all registered websites of a user
         /// </summary>
-        /// <returns>A <see cref="DataTable"/> containing one column with all websites</returns>
+        /// <returns>A <see cref="DataTable"/> containing one column with all websitenames + ids</returns>
         public DataTable GetAllWebsites()
         {
             var resultTable = new DataTable();
 
             using (var connection = new SqliteConnection(_connectionString))
             {
-              connection.Open();
-                var command = new SqliteCommand("SELECT website_name FROM website_content", connection);
+                connection.Open();
+                var command = new SqliteCommand("SELECT id, website_name FROM website_content ORDER BY website_name COLLATE NOCASE ASC", connection);
+
 
                 using (var reader = command.ExecuteReader())
                 {

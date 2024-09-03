@@ -4,116 +4,75 @@ using Avalonia.Controls;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.Logic;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using Avalonia;
 using Avalonia.Interactivity;
 
 namespace ScrapeBuddy.ViewModels
 {
     /// <summary>
-    /// The main window of the application, responsible for managing the user interface
-    /// and handling user interactions.
+    /// Main application window managing the UI and user interactions.
     /// </summary>
     public partial class MainWindow : Window
     {
         private Timer _timer;
+        private int? _selectedWebsiteId;
         
-        /// <summary>
-        /// Gets or sets the view for adding a new website.
-        /// </summary>
-        private NewWebsite NewWebsiteView { get; set; }
-
-        /// <summary>
-        /// Gets or sets the view for displaying registered websites.
-        /// </summary>
+        private AddWebsite NewWebsiteView { get; set; }
         private RegisteredWebsite RegisteredWebsiteView { get; set; }
+        private DeleteWebsite DeleteWebsiteView { get; set; }
+
+        public static List<WebsiteInfo> StoredUserWebsites { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of websites stored by the user.
-        /// </summary>
-        public List<string?> StoredUserWebsites { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// Initializes the window and its components.
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
             SetupTimer();
-            NewWebsiteView = new NewWebsite();
+            NewWebsiteView = new AddWebsite();
             RegisteredWebsiteView = new RegisteredWebsite();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
-            CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView);
+            DeleteWebsiteView = new DeleteWebsite();
+            CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView);  
+            SearchTextBox.TextChanged += UpdateWebsiteListBox;
+            RegisteredWebsiteListBox.SelectionChanged += RegisteredWebsiteListBox_SelectionChanged;
             RegisteredWebsiteListBox.Tapped += (sender, args) => RenderView(sender, args, RegisteredWebsiteView);
             NewWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NewWebsiteView);
             RegisteredWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, RegisteredWebsiteView);
         }
 
         /// <summary>
-        /// Sets up a timer that triggers an event at regular intervals.
+        /// Handles website selection changes in the list box.
         /// </summary>
-        private void SetupTimer()
+        private void RegisteredWebsiteListBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            // Create and configure the timer
-            _timer = new Timer
+            var selectedWebsite = RegisteredWebsiteListBox.SelectedItem as WebsiteInfo;
+            if (selectedWebsite != null)
             {
-                Interval = 300000 // 5 minutes in milliseconds
-            };
-            _timer.Elapsed += OnTimedEvent;
-            _timer.Start();
+                _selectedWebsiteId = selectedWebsite.Id;
+                Console.WriteLine($"Selected website ID: {_selectedWebsiteId}");
+                if (_selectedWebsiteId.HasValue)
+                {
+                    RegisteredWebsiteView.LoadWebsiteData(_selectedWebsiteId.Value);
+                }
+                
+            }
         }
 
         /// <summary>
-        /// Handles the elapsed event of the timer. This is where the scraping process starts.
+        /// Displays the specified view in the main content area.
         /// </summary>
-        /// <param name="source">The source of the event.</param>
-        /// <param name="e">The event data.</param>
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-            // Call your method here
-            Console.WriteLine("Start scraping Now");
-            Scrape.ScrapeItems();
-        }
-
-        /// <summary>
-        /// Disposes the timer when the window is closed.
-        /// </summary>
-        /// <param name="e">The event data.</param>
-        protected override void OnClosed(EventArgs e)
-        {
-            _timer?.Dispose();
-            base.OnClosed(e);
-        }
-
-        /// <summary>
-        /// Handles the event when a view requests to be canceled (removed from display).
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The event data.</param>
-        /// <param name="view">The view to be removed from the main content.</param>
-        private void OnViewCancelRequested(object sender, EventArgs args, Control view)
-        {
-            MainContent.Children.Remove(view);
-        }
-
-        /// <summary>
-        /// Retrieves the list of websites stored by the user from the database.
-        /// </summary>
-        /// <param name="db">The database handler used to query the database.</param>
-        /// <returns>A list of website names stored by the user.</returns>
-        private List<string?> GetUsersWebsites(DatabaseHandler db)
-        {
-            return db.GetAllWebsites().AsEnumerable().Select(row => row["website_name"].ToString()).ToList();
-        }
-
-        /// <summary>
-        /// Renders a specified view in the main content area of the window.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The event data.</param>
-        /// <param name="view">The view to be rendered.</param>
         private void RenderView(object sender, RoutedEventArgs args, Control view)
         {
+            if (view is RegisteredWebsite && _selectedWebsiteId.HasValue)
+            {
+                RegisteredWebsiteView.LoadWebsiteData(_selectedWebsiteId.Value);
+            }
+    
             if (!IsViewLoadedInMainContent(view))
             {
                 MainContent.Children.Clear();
@@ -122,13 +81,117 @@ namespace ScrapeBuddy.ViewModels
         }
 
         /// <summary>
-        /// Checks if a specified view is already loaded in the main content area.
+        /// Retrieves the user's websites from the database.
         /// </summary>
-        /// <param name="view">The view to check.</param>
-        /// <returns><c>true</c> if the view is loaded; otherwise, <c>false</c>.</returns>
+        public static List<WebsiteInfo> GetUsersWebsites(DatabaseHandler db)
+        {
+            return db.GetAllWebsites().AsEnumerable().Select(row => new WebsiteInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                WebsiteName = row["website_name"].ToString()
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Removes a view from the main content area when canceled.
+        /// </summary>
+        private void OnViewCancelRequested(object sender, EventArgs args, Control view)
+        {
+            MainContent.Children.Remove(view);
+            UpdateList();
+        }
+
+        /// <summary>
+        /// Configures and starts the timer for periodic events.
+        /// </summary>
+        private void SetupTimer()
+        {
+            _timer = new Timer
+            {
+                Interval = 300000 // 5 minutes
+            };
+            _timer.Elapsed += OnTimedEvent;
+            _timer.Start();
+        }
+
+        /// <summary>
+        /// Starts the scraping process when the timer elapses.
+        /// </summary>
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine("Start scraping now");
+            Scrape.ScrapeItems();
+        }
+
+        /// <summary>
+        /// Disposes of the timer when the window closes.
+        /// </summary>
+        protected override void OnClosed(EventArgs e)
+        {
+            _timer?.Dispose();
+            base.OnClosed(e);
+        }
+
+        /// <summary>
+        /// Checks if a view is already displayed in the main content area.
+        /// </summary>
         private bool IsViewLoadedInMainContent(Control view)
         {
             return MainContent.Children.Contains(view);
         }
+
+        /// <summary>
+        /// Updates the contents of the RegisteredWebsiteListBox based on the text entered in the SearchTextBox.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the SearchTextBox.</param>
+        /// <param name="args">The event data associated with the input change, if any.</param>
+        public void UpdateWebsiteListBox(object? sender, EventArgs? args)
+        {
+            RegisteredWebsiteListBox.ItemsSource = string.IsNullOrEmpty(SearchTextBox.Text)
+                ? StoredUserWebsites
+                : StoredUserWebsites.Where(site => site.WebsiteName.Contains(SearchTextBox.Text, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+        }
+
+        /// <summary>
+        /// Refreshes the list of stored websites from the database and updates the RegisteredWebsiteListBox.
+        /// </summary>
+        public void UpdateList()
+        {
+            StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
+            UpdateWebsiteListBox(null, null);
+        }
+        
+        /// <summary>
+        /// opens confirmation dialog for deleting registered Website
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void RenderDeleteWebsiteView(object? sender, RoutedEventArgs e)
+        {
+            var item = sender as MenuItem;
+            var websiteInfo = item.Tag as WebsiteInfo;
+            int selectedId = websiteInfo.Id;
+            Console.WriteLine($"Current Id: {selectedId}");
+            
+            var confDialog = new DeleteWebsite();
+            bool result = await confDialog.ShowDialog<bool>(this);
+
+            if (result)
+            {
+                DatabaseHandler.DeleteScrapeItem(websiteInfo.Id);
+                UpdateList();
+            }
+        }
+    }
+
+    /// <summary>   
+    /// Represents a website's basic information.
+    /// </summary>
+    public class WebsiteInfo
+    {
+        public int Id { get; set; }
+        public string? WebsiteName { get; set; }
     }
 }
+
