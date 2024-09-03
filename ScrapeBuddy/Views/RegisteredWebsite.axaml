@@ -70,6 +70,12 @@
         <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" Background="PaleGreen">
             <TextBox Grid.Column="1" Grid.Row="1" Watermark="Website Name" x:Name="WebsiteNameTextBox" IsEnabled="{Binding IsEditable}" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,0"/>
             <TextBox Grid.Column="1" Grid.Row="3" Watermark="Website Link" x:Name="WebsiteLinkTextBox" IsEnabled="{Binding IsEditable}" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,10"/>
+            <DockPanel Grid.Column="1" Grid.Row="4" Width="200">
+                <Button DockPanel.Dock="Top" x:Name="ClicksButton" Click="OnClicksButtonClick" Content="Add Click" Margin="0,15,0,0"/>
+                <StackPanel x:Name="ClicksStackPanel" DockPanel.Dock="Bottom" Margin="0,0,0,20" Orientation="Vertical" Width="500">
+                    <!-- Dynamic content will be added here -->
+                </StackPanel>
+            </DockPanel>
             <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,15,0,0">
                 <Button x:Name="IdButton" Content="ID" Click="OnIDClicked"
                         Classes="ToggleButton LeftToggle" IsEnabled="False"/>
@@ -83,21 +89,19 @@
                 <TextBox Grid.Row="1" Grid.Column="0" x:Name="UsernameTextBox" Watermark="Username" IsEnabled="{Binding IsEditable}" IsVisible="False"></TextBox>
                 <TextBox Grid.Row="1" Grid.Column="2" x:Name="PasswordTextBox" Watermark="Password" IsEnabled="{Binding IsEditable}" IsVisible="False" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
             </Grid>
-            <StackPanel Grid.Column="1" Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,15,0,0">
-                <TextBlock Text="Content"></TextBlock>
-            </StackPanel>
+            
+            <TextBlock Grid.Column="1" Grid.Row="12" Text="Content"></TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="18" x:Name="ContentTextBox" Width="200" Height="20" IsEnabled="False" VerticalContentAlignment="Center" Margin="0,5,0,5"/>
+
+           
         </Grid>
         
         <!-- scrape and save -->
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" Background="Aqua">
             <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="Scrape">
             </Button>
-            <StackPanel Grid.Column="3">
-                <Button x:Name="SaveBtn"  Content="Save" Click="WriteUserInputsToDatabase" />
-                <ToolTip.Tip>
-                    <TextBlock>Conditions for content to be savable</TextBlock>
-                </ToolTip.Tip>
-            </StackPanel>
+            <Button Grid.Column="3" x:Name="SaveBtn" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase">
+            </Button>
             
         </Grid>
     </Grid>

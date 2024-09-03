@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -17,12 +19,52 @@ namespace ScrapeBuddy.ViewModels
     /// </summary>
     public partial class RegisteredWebsite : UserControl
     {
+        private string _websiteName;
+        private int _websiteId;
+        private string _websiteLink;
+        private string? _username;
+        private string? _password;
+        public bool Scraping = false;
+        public string Content;
+        public ScrapeContent scrapeItem;
+        public string? WebsiteName
+        {
+            get { return _websiteName; }
+            set { _websiteName = value; }
+        }
+        public string? WebsiteLink
+        {
+            get { return _websiteLink; }
+            set { _websiteLink = value; }
+        }
+        public bool IsEditable { get; set; }
+        public string? XPath { get; set; }
+        public string? Id { get; set; }
+        private int clickCount = 0;
+        public string? Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
+        public string? Password
+        {
+            get { return _password; }
+            set { _password = value; }
+        }
+        public bool IsId { get; set; }
+        
+        public bool NeedsCredentials { get; set; }
+        public bool Login;
+        private List<string>? ClicksList;
+        public event EventHandler CancelRequested;
+
+        
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisteredWebsite"/> class.
         /// </summary>
         public RegisteredWebsite()
         {
-            
             InitializeComponent();
             SaveBtn.IsEnabled = IsInputSavable();
             WebsiteNameTextBox.TextChanged += OnTextboxInputChanged;
@@ -31,7 +73,6 @@ namespace ScrapeBuddy.ViewModels
             UsernameTextBox.TextChanged += OnTextboxInputChanged;
             PasswordTextBox.TextChanged += OnTextboxInputChanged;
             EditBtn.Click += OnEnableEdit;
-            
         }
 
         /// <summary>
@@ -40,12 +81,17 @@ namespace ScrapeBuddy.ViewModels
         /// <param name="id">The ID of the website to load.</param>
         public void LoadWebsiteData(int id)
         {
+            ClicksStackPanel.Children.Clear();
             SetButtonState(XPathButton, false);
             SetButtonState(IdButton, true);
             DataContext = this;
             NeedsCredentials = true;
             IsEditable = false;
             EditBtn.IsChecked = false;
+            SaveBtn.IsVisible = false;
+            ContentTextBox.IsVisible = true;
+            clickCount = 0;
+            ToolTip.SetTip(SaveBtn, "Scrape to save your inputs");
             
             var scrapeContent = DatabaseHandler.GetScrapeContent();
             scrapeItem = scrapeContent.FirstOrDefault(item => item.id == id);
@@ -55,12 +101,18 @@ namespace ScrapeBuddy.ViewModels
             _username = scrapeItem.username;
             _password = scrapeItem.password;
             _websiteLink = scrapeItem.url;
+            ClicksList = scrapeItem.clicks;
             XPath = scrapeItem.xPath;
             Id = scrapeItem.elementId;
             NeedsCredentials = scrapeItem.login;
             
             WebsiteNameTextBox.Text = scrapeItem.name;
             WebsiteLinkTextBox.Text = scrapeItem.url;
+            ContentTextBox.Text = scrapeItem.content;
+            
+            DisplayClicks();
+            ShowDeleteClicks(false);
+            SetAllTextBoxesEditability(false);
             
             
             if(Id == null){
@@ -88,6 +140,7 @@ namespace ScrapeBuddy.ViewModels
             XPathButton.IsEnabled = false;
             IdButton.IsEnabled = false;
             CredentialsBtn.IsVisible = false;
+            ClicksButton.IsVisible = false;
             
             if (NeedsCredentials)
             {
@@ -104,53 +157,16 @@ namespace ScrapeBuddy.ViewModels
                 PasswordTextBox.IsVisible = false;
             }
         }
-
-        private string _websiteName;
-        private int _websiteId;
-        private string _websiteLink;
-        private string? _username;
-        private string? _password;
-        public bool Scraping = false;
-        public string Content;
-        public ScrapeContent scrapeItem;
-        public string? WebsiteName
-        {
-            get { return _websiteName; }
-            set { _websiteName = value; }
-        }
-        public string? WebsiteLink
-        {
-            get { return _websiteLink; }
-            set { _websiteLink = value; }
-        }
-        public bool IsEditable { get; set; }
-        public string? XPath { get; set; }
-        public string? Id { get; set; }
-        public string? Username
-        {
-            get { return _username; }
-            set { _username = value; }
-        }
-        public string? Password
-        {
-            get { return _password; }
-            set { _password = value; }
-        }
-        public bool IsId { get; set; }
         
-        public bool NeedsCredentials { get; set; }
-        public bool Login;
-        public event EventHandler CancelRequested;
-
         /// <summary>
         /// Writes user inputs to the database and raises the CancelRequested event.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="args">The event data.</param>
-        private void WriteUserInputsToDatabase(object sender, RoutedEventArgs args)
+        private void WriteUserInputsToDatabase(object? sender, RoutedEventArgs args)
         {
             Login = _password != null && _username != null;
-            DatabaseHandler website = new DatabaseHandler(WebsiteName, WebsiteLink, XPath, Id, Content, Login, Username, Password);
+            DatabaseHandler website = new DatabaseHandler(WebsiteName, WebsiteLink, ClicksList, XPath, Id, Content, Login, Username, Password);
             website.CreateWebsiteContent();
             SaveBtn.IsEnabled = false;
             LoadWebsiteData(_websiteId);
@@ -165,13 +181,14 @@ namespace ScrapeBuddy.ViewModels
         private async void Scrape(object sender, RoutedEventArgs args)
         {
             var loadingDialog = new ScrapeDialog();
+            StoreClicksData();
             var selenium = new Selenium();
             Login = _password != null && _username != null;
             try
             {
                 loadingDialog.Show();
 
-                IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, XPath, Id, Username, Password));
+                IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
 
                 loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}");
                 Scraping = true;
@@ -214,7 +231,6 @@ namespace ScrapeBuddy.ViewModels
         /// <param name="args">The event data.</param>
         private void ShowCredentialsEditView(object? sender, RoutedEventArgs routedEventArgs)
         {
-            Console.WriteLine("Edit credentials: " + NeedsCredentials);
             if (NeedsCredentials)
             {
                 
@@ -251,12 +267,10 @@ namespace ScrapeBuddy.ViewModels
                 {
                     case "WebsiteNameTextBox":
                         WebsiteName = textBox.Text;
-                        Console.WriteLine($"{WebsiteName}");
                         break;
 
                     case "WebsiteLinkTextBox":
                         WebsiteLink = textBox.Text;
-                        Console.WriteLine($"{WebsiteLink}");
                         break;
 
                     case "PathToElementTextBox":
@@ -266,12 +280,10 @@ namespace ScrapeBuddy.ViewModels
 
                      case "PasswordTextBox":
                         Password = textBox.Text;
-                        Console.WriteLine($"{Password}");
                         break;
                    
                      case "UsernameTextBox": 
                         Username = textBox.Text;
-                        Console.WriteLine($"{Username}");
                         break;
 
 
@@ -302,6 +314,7 @@ namespace ScrapeBuddy.ViewModels
             IsEditable = !IsEditable;
             Console.WriteLine(IsEditable);
             WebsiteNameTextBox.IsEnabled = IsEditable;
+            SaveBtn.IsVisible = IsEditable;
             WebsiteLinkTextBox.IsEnabled = IsEditable;
             PathToElementTextBox.IsEnabled = IsEditable;
             XPathButton.IsEnabled = IsEditable;
@@ -309,6 +322,8 @@ namespace ScrapeBuddy.ViewModels
             UsernameTextBox.IsEnabled = IsEditable;
             PasswordTextBox.IsEnabled = IsEditable;
             CredentialsBtn.IsVisible = IsEditable;
+            ClicksButton.IsVisible = IsEditable;
+            ContentTextBox.IsVisible = !IsEditable;
             if (NeedsCredentials)
             {
                 PasswordTextBox.IsEnabled = IsEditable;
@@ -325,6 +340,9 @@ namespace ScrapeBuddy.ViewModels
             {
                 LoadWebsiteData(_websiteId);
             }
+
+            ShowDeleteClicks(IsEditable);
+            SetAllTextBoxesEditability(IsEditable);
         }
 
         /// <summary>
@@ -358,6 +376,161 @@ namespace ScrapeBuddy.ViewModels
             Id = PathToElementTextBox.Text;
             IsId = true;
         }
+        
+        /// <summary>
+        /// Handles the click event of the ClicksButton. (Add clicks)
+        /// Creates a new <see cref="DockPanel"/> containing a <see cref="TextBox"/> and a delete <see cref="Button"/>.
+        /// The <see cref="TextBox"/> is initialized with a unique watermark indicating the click count,
+        /// and the <see cref="Button"/> allows for removing the <see cref="DockPanel"/> from the <see cref="ClicksStackPanel"/>.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnClicksButtonClick(object sender, RoutedEventArgs e)
+        {
+            clickCount++;
+            
+            var dockPanel = new DockPanel
+            {
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            var textBox = new TextBox
+            {
+                Name = $"ClicksTextBox{clickCount}",
+                Watermark = $"XPath Click {clickCount}",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+            };
+            
+            dockPanel.Children.Add(textBox);
+            DockPanel.SetDock(textBox, Dock.Left);
+
+            var deleteButton = new Button
+            {
+                Name = $"DeleteButton{clickCount}",
+                Content = "X",
+                Margin = new Thickness(5, 0, 0, 0)
+            };
+            deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+            dockPanel.Children.Add(deleteButton);
+            DockPanel.SetDock(deleteButton, Dock.Right);
+            ClicksStackPanel.Children.Add(dockPanel);
+        }
+        
+        /// <summary>
+        /// Stores the current data from all <see cref="TextBox"/> controls contained within <see cref="ClicksStackPanel"/> into the <see cref="ClicksList"/>.
+        /// Clears the existing entries in <see cref="ClicksList"/> before populating it with the current <see cref="TextBox"/> contents.
+        /// </summary>
+        private void StoreClicksData()
+        {
+            if (ClicksList == null)
+            {
+                return; 
+            }
+            ClicksList.Clear();
+            foreach (var child in ClicksStackPanel.Children)
+            {
+                if (child is DockPanel dockPanel)
+                {
+                    var textBox = dockPanel.Children.OfType<TextBox>().FirstOrDefault();
+                    if (textBox != null)
+                    {
+                        ClicksList.Add(textBox.Text);
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Sets the editability of all TextBox controls within ClicksStackPanel.
+        /// </summary>
+        /// <param name="isEditable">True to make the TextBox controls editable; false to make them read-only.</param>
+        private void SetAllTextBoxesEditability(bool isEditable)
+        {
+            foreach (var child in ClicksStackPanel.Children)
+            {
+                if (child is DockPanel dockPanel)
+                {
+                    foreach (var panelChild in dockPanel.Children)
+                    {
+                        if (panelChild is TextBox textBox)
+                        {
+                            textBox.IsEnabled = isEditable;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Toggles the visibility of all delete buttons in the <see cref="ClicksStackPanel"/> based on the provided flag.
+        /// </summary>
+        /// <param name="isEnabled">A boolean value indicating whether the delete buttons should be visible or not. 
+        /// <c>true</c> to make the delete buttons visible; <c>false</c> to hide them.</param>
+        private void ShowDeleteClicks(bool isEnabled)
+        {
+            foreach (var child in ClicksStackPanel.Children)
+            {
+                if (child is DockPanel dockPanel)
+                {
+                    var deleteButton = dockPanel.Children.OfType<Button>()
+                        .FirstOrDefault(b => b.Name.StartsWith("DeleteButton"));
+                    if (deleteButton != null)
+                    {
+                        deleteButton.IsVisible = isEnabled;
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Displays the clicks stored in <see cref="ClicksList"/> as <see cref="TextBox"/> controls within the <see cref="ClicksStackPanel"/>. 
+        /// Each click is represented by a <see cref="TextBox"/> and a corresponding delete <see cref="Button"/>.
+        /// </summary>
+        private void DisplayClicks()
+        {
+            if (ClicksList != null)
+            {
+                foreach (var click in ClicksList)
+                {
+                    clickCount++;
+
+                    // Create a new DockPanel to hold the TextBox and Button
+                    var dockPanel = new DockPanel
+                    {
+                        Margin = new Thickness(0, 5, 0, 0)
+                    };
+
+                    // Create the TextBox
+                    var textBox = new TextBox
+                    {
+                        Name = $"ClicksTextBox{clickCount}",
+                        Text = click,
+                        Watermark = $"XPath",
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+                    };
+
+                    // Add TextBox to the DockPanel
+                    dockPanel.Children.Add(textBox);
+                    DockPanel.SetDock(textBox, Dock.Left);
+
+                    var deleteButton = new Button
+                    {
+                        Name = $"DeleteButton{clickCount}", // Set a unique name
+                        Content = "X",
+                        Margin = new Thickness(5, 0, 0, 0)
+                    };
+
+                    // Handle delete button click event
+                    deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+
+                    // Add Button to the DockPanel
+                    dockPanel.Children.Add(deleteButton);
+                    DockPanel.SetDock(deleteButton, Dock.Right);
+
+                    // Add the DockPanel to ClicksStackPanel
+                    ClicksStackPanel.Children.Add(dockPanel);
+                }
+            }
+        }
 
         /// <summary>
         /// Updates the visual state of the button based on whether it is active or not.
@@ -378,6 +551,25 @@ namespace ScrapeBuddy.ViewModels
                 button.Foreground = Brushes.Black;
                 button.BorderBrush = Brushes.Black;
             }
+        }
+        
+        /// <summary>
+        /// Determines whether user inputs can be written to the database.
+        /// </summary>
+        /// <param name="parameter">An optional parameter that may influence the ability to write to the database.</param>
+        /// <param name="reporter">An object used to report why the action cannot be executed.</param>
+        /// <returns>
+        /// <c>true</c> if user inputs can be written to the database; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool CanWriteUserInputsToDatabase(object? parameter, IReportReasonCantExecute reporter)
+        {
+            if (!SaveBtn.IsEnabled)
+            {
+                reporter.ReasonCantExecute = "You can't do the thing yet.";
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace TestScrapeBuddy
         [Test]
         public void TestCreateWebsiteContent()
         {
-            _dbHandler = new DatabaseHandler("Website1", "https://test", "xPath1", 
+            _dbHandler = new DatabaseHandler("Website1", "https://test", null,"xPath1", 
                 "elementId1", "content1", false, null, null);
             
             // Act
@@ -56,7 +56,7 @@ namespace TestScrapeBuddy
         [Test]
         public void TestCreateWebsiteWithLogin()
         {
-            _dbHandler = new DatabaseHandler("Website2", "https://test2", "xPath2", 
+            _dbHandler = new DatabaseHandler("Website2", "https://test2", null,"xPath2", 
                 null, "content2", true, "password2", "password1");
             
             // Act
@@ -97,7 +97,7 @@ namespace TestScrapeBuddy
         public void TestDeleteScrapeItem()
         {
             // First, create some test data
-            _dbHandler = new DatabaseHandler("TestWebsiteToDelete", "https://delete.test", "deleteXPath", 
+            _dbHandler = new DatabaseHandler("TestWebsiteToDelete", "https://delete.test", null,"deleteXPath", 
                 "deleteElementId", "deleteContent", false, "test", "test");
             _dbHandler.CreateWebsiteContent();
 

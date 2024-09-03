@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS website_content (
                                                id INTEGER PRIMARY KEY AUTOINCREMENT,
                                                website_name TEXT NOT NULL,
-                                               url NOT NUll, 
+                                               url NOT NUll,
+                                               clicks TEXT,
                                                x_path TEXT,
                                                element_id TEXT,
                                                content TEXT NOT NULL,

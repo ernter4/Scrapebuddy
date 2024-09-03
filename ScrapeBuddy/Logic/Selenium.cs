@@ -19,6 +19,7 @@ namespace ScrapeBuddy.Logic
         /// </summary>
         private IWebDriver _driver;
 
+        private double _implicit_Wait = 2.5;
         /// <summary>
         /// Initializes a new instance of the <see cref="Selenium"/> class and navigates to the specified URL.
         /// </summary>
@@ -35,7 +36,7 @@ namespace ScrapeBuddy.Logic
             service.HideCommandPromptWindow = true; 
 
             _driver = new ChromeDriver(service, options);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0.5); // if element is not reachable the driver tries for 2 secs before failing.
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(_implicit_Wait); // if element is not reachable the driver tries for 2 secs before failing.
             if (url != "")
             {
                 _driver.Navigate().GoToUrl(url);
@@ -107,19 +108,22 @@ namespace ScrapeBuddy.Logic
         /// </summary>
         /// <param name="url">The url of desired element</param> 
         /// <param name="login">Specifies if login is necessary</param>
+        /// <param name="elementstoclick"> A list of xpaths of Elements wich should be clicked</param>
         /// <param name="xpath">The xpath of desired Webelement</param>
         /// <param name="id"> The id of desired Webelement</param>
         /// <param name="username">The username to be used for login</param>
         /// <param name="password">The password to be used for login</param>
         /// <returns>desired Webelement</returns>
 
-        public IWebElement Scrape(string url,bool login,string? xpath  ,string? id  , string? username, string? password )
+        public IWebElement Scrape(string url,bool login, List<string>? elementstoclick, string? xpath  ,string? id  , string? username, string? password)
         {
+            Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath + " Id: " + id + " Username: " + username+ " Password: " + password);
             _driver.Navigate().GoToUrl(url);
             if (login)
             {
                 Login(username, password);
             }
+            Click(elementstoclick);
             
             IWebElement element;
             if (xpath is null)
@@ -147,6 +151,7 @@ namespace ScrapeBuddy.Logic
             foreach (var username in usernamefieldnames)
             {
                 transfer = _driver.FindElements(By.Name(username)).ToList();
+                _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
                 foreach (var usernamefield in transfer)
                 {
                     if (usernamefield.TagName == "input")// Only return input fields
@@ -155,9 +160,10 @@ namespace ScrapeBuddy.Logic
                     }
                         
                 }
-           
+                
                 
             }
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(_implicit_Wait);
             return usernamefields;
         }
         /// <summary>
@@ -166,7 +172,7 @@ namespace ScrapeBuddy.Logic
         /// <returns>List of passwordfields in wich the password can be inserted</returns>
         private List<IWebElement> Getpasswordfields()
         {
-             
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
              List<string> passwordfieldnames = ["pssword", "password", "passwrd","pass"];
              ReadOnlyCollection<IWebElement> transfer;   
              List<IWebElement> passwordfields = [];
@@ -181,7 +187,28 @@ namespace ScrapeBuddy.Logic
                      }
                  }
              }
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(_implicit_Wait);
              return passwordfields;
+        }
+        /// <summary>
+        /// clicks through elements specified by a list of xpath
+        /// </summary>
+        /// <param name="elementexpaths"></param>
+        public void Click(List<string>? elementexpaths)
+        {
+            IWebElement element;// the element wich has to be clicked
+            if (elementexpaths is null)
+            {
+                return;
+            } 
+            foreach ( string xpath in elementexpaths)
+            {
+               element= GetElementByXPath(xpath);
+               element.Click();
+            }
+            
+            
+
         }
 
         /// <summary>
@@ -214,7 +241,7 @@ namespace ScrapeBuddy.Logic
                 var selenium = new Selenium();
                 try
                 {
-                    IWebElement element = selenium.Scrape(item.url, item.login, item.xPath, item.elementId, item.username, item.password);
+                    IWebElement element = selenium.Scrape(item.url, item.login, item.clicks, item.xPath, item.elementId, item.username, item.password);
                     if (element.Text == item.content)
                     {
                         Console.WriteLine($"Content is still the same: {element.Text} = {item.content}");

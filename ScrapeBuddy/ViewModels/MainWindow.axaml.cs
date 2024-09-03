@@ -22,7 +22,6 @@ namespace ScrapeBuddy.ViewModels
         
         private AddWebsite NewWebsiteView { get; set; }
         private RegisteredWebsite RegisteredWebsiteView { get; set; }
-        private DeleteWebsite DeleteWebsiteView { get; set; }
 
         public static List<WebsiteInfo> StoredUserWebsites { get; set; }
 
@@ -36,7 +35,6 @@ namespace ScrapeBuddy.ViewModels
             NewWebsiteView = new AddWebsite();
             RegisteredWebsiteView = new RegisteredWebsite();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
-            DeleteWebsiteView = new DeleteWebsite();
             CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView);  
             SearchTextBox.TextChanged += UpdateWebsiteListBox;
             RegisteredWebsiteListBox.SelectionChanged += RegisteredWebsiteListBox_SelectionChanged;
@@ -68,6 +66,7 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void RenderView(object sender, RoutedEventArgs args, Control view)
         {
+            
             if (view is RegisteredWebsite && _selectedWebsiteId.HasValue)
             {
                 RegisteredWebsiteView.LoadWebsiteData(_selectedWebsiteId.Value);
@@ -78,6 +77,11 @@ namespace ScrapeBuddy.ViewModels
                 MainContent.Children.Clear();
                 MainContent.Children.Add(view);
             }
+        }
+        
+        private void OnDeleteSettingsBtnClick(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true; // Prevents the event from propagating to other controls.
         }
 
         /// <summary>
@@ -162,6 +166,12 @@ namespace ScrapeBuddy.ViewModels
             UpdateWebsiteListBox(null, null);
         }
         
+        private void OnButtonTapped(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true; // Markiert das Event als behandelt, um zu verhindern, dass es weiter propagiert
+        }
+
+        
         /// <summary>
         /// opens confirmation dialog for deleting registered Website
         /// </summary>
@@ -174,7 +184,7 @@ namespace ScrapeBuddy.ViewModels
             int selectedId = websiteInfo.Id;
             Console.WriteLine($"Current Id: {selectedId}");
             
-            var confDialog = new DeleteWebsite();
+            var confDialog = new DeleteWebsite(websiteInfo.WebsiteName);
             bool result = await confDialog.ShowDialog<bool>(this);
 
             if (result)

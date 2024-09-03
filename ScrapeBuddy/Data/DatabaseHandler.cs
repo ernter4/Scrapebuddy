@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Microsoft.Data.Sqlite;
 using ScrapeBuddy.Logic;
 
@@ -23,6 +24,7 @@ namespace ScrapeBuddy.Data
         public string notification;
         public string title;
         public bool dismiss;
+        public List<string>? clicks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseHandler"/> class (used to create scrape object).
@@ -36,10 +38,11 @@ namespace ScrapeBuddy.Data
         /// <param name="login">Indicator if login exists.</param>
         /// <param name="username">The username for the user record.</param>
         /// <param name="password">The password for the user record.</param>
-        public DatabaseHandler(string websiteName, string url, string? xPath, string? elementId, string content, bool login, string? username, string? password)
+        public DatabaseHandler(string websiteName, string url, List<string>? clicks, string? xPath, string? elementId, string content, bool login, string? username, string? password)
         {
             this.websiteName = websiteName;
             this.url = url;
+            this.clicks = clicks;
             this.xPath = xPath;
             this.elementId = elementId;
             this.content = content;
@@ -116,26 +119,37 @@ namespace ScrapeBuddy.Data
             {
                 connection.Open();
                 
-                var command = new SqliteCommand("INSERT INTO website_content (website_name, url, x_path, element_id, content, login) VALUES (@websiteName, @url, @xPath, @elementId, @content, @login)", connection);
+                
+                
+                string? serializedClicks = clicks != null ? string.Join(",", clicks) : null;
+                
+                if (clicks?.Count == 0)
+                {
+                    serializedClicks = null;
+                }
+                
+                var command = new SqliteCommand("INSERT INTO website_content (website_name, url, clicks, x_path, element_id, content, login) VALUES (@websiteName, @url, @clicks, @xPath, @elementId, @content, @login)", connection);
                 command.Parameters.AddWithValue("@websiteName", websiteName);
                 command.Parameters.AddWithValue("@url", url);
+                command.Parameters.AddWithValue("@clicks", serializedClicks ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@xPath", xPath ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@elementId", elementId ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@content", content);
                 command.Parameters.AddWithValue("@login", login ? 1 : 0);
-                
+        
                 command.ExecuteNonQuery();
 
                 // Retrieve the last inserted ID
                 var lastInsertIdCommand = new SqliteCommand("SELECT last_insert_rowid()", connection);
                 int insertedId = Convert.ToInt32(lastInsertIdCommand.ExecuteScalar());
-                
+        
                 if (login)
                 {
                     CreateUser(insertedId);
                 }
             }
         }
+
         
         /// <summary>
         /// Delete all Notifications 
@@ -263,6 +277,7 @@ namespace ScrapeBuddy.Data
                     wc.id,
                     wc.website_name,
                     wc.url, 
+                    wc.clicks,
                     wc.x_path, 
                     wc.element_id,
                     wc.content,
@@ -282,31 +297,40 @@ namespace ScrapeBuddy.Data
                     {
                         while (reader.Read())
                         {
-                            string? decUsername;
-                            string? decPassword;
-                            
-                            if (reader.IsDBNull(9) && reader.IsDBNull(10))
+                            string? decUsername = null;
+                            string? decPassword = null;
+
+                            if (!reader.IsDBNull(10) && !reader.IsDBNull(11))
                             {
-                                decUsername = null;
-                                decPassword = null;
-                            } else{
-                                byte[] salt = reader.GetFieldValue<byte[]>(7);
-                                byte[] IV = reader.GetFieldValue<byte[]>(8);
-                                Decryption dec = new Decryption(reader.GetFieldValue<byte[]>(9), reader.GetFieldValue<byte[]>(10),  salt, IV);
+                                byte[] salt = reader.GetFieldValue<byte[]>(8);
+                                byte[] IV = reader.GetFieldValue<byte[]>(9);
+                                Decryption dec = new Decryption(
+                                    reader.GetFieldValue<byte[]>(10), 
+                                    reader.GetFieldValue<byte[]>(11), 
+                                    salt, 
+                                    IV
+                                );
                                 var resultDec = dec.DecryptStringFromBytes_Aes();
                                 decUsername = resultDec.username;
                                 decPassword = resultDec.password;
                             }
-                            
+
                             var scrapeContent = new ScrapeContent
                             {
                                 id = reader.GetInt32(0),
                                 name = reader.GetString(1),
                                 url = reader.GetString(2),
-                                xPath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                elementId = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                content = reader.GetString(5),
-                                login = reader.GetBoolean(6),
+                                clicks = reader.IsDBNull(3) 
+                                    ? null 
+                                    : reader.GetString(3).Split(',').ToList(),
+                                xPath = reader.IsDBNull(4) 
+                                    ? null 
+                                    : reader.GetString(4),  // Fixed index
+                                elementId = reader.IsDBNull(5) 
+                                    ? null 
+                                    : reader.GetString(5),  // Fixed index
+                                content = reader.GetString(6),
+                                login = reader.GetBoolean(7),
                                 username = decUsername,
                                 password = decPassword
                             };
@@ -316,8 +340,9 @@ namespace ScrapeBuddy.Data
                     }
                 }
             }
-            return scrapeContents; 
+            return scrapeContents;
         }
+
         
         /// <summary>
         /// Retrieves the content of all notifications.
@@ -363,7 +388,6 @@ namespace ScrapeBuddy.Data
 
             return notifications;
         }
-
         
         /// <summary>
         /// Gets all registered websites of a user
@@ -397,6 +421,8 @@ namespace ScrapeBuddy.Data
         public int id { get; set; }
         public string name { get; set; }
         public string url { get; set; }
+        
+        public List<string>? clicks { get; set; }
         public string? elementId { get; set; }
         public string? xPath { get; set; }
         public string content { get; set; }

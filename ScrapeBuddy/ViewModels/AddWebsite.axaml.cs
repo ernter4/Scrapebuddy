@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -20,7 +24,8 @@ public partial class AddWebsite : UserControl
         InitializeComponent();
         DataContext = this;
         NeedsCredentials = false;
-        SaveBtn.IsEnabled = IsInputSavable();
+        SaveBtn.IsEnabled = false;
+        ToolTip.SetTip(SaveBtn, "Scrape to save your inputs");
         WebsiteNameTextBox.TextChanged += OnTextboxInputChanged;
         WebsiteLinkTextBox.TextChanged += OnTextboxInputChanged;
         PathToElementTextBox.TextChanged += OnTextboxInputChanged;
@@ -60,7 +65,9 @@ public partial class AddWebsite : UserControl
     public bool Login = false;
     public bool Scraping = false;
     public string Content;
+    private int clickCount = 0;
     public bool NeedsCredentials { get; set; }
+    private List<string>? ClicksList = new List<string>();
     private Style PseudoDeactivated { get; set; }
 
     public event EventHandler CancelRequested;
@@ -83,6 +90,8 @@ public partial class AddWebsite : UserControl
         PasswordTextBox.Text = null;
         Scraping = false;
         Login = false;
+        clickCount = 0;
+        ClicksStackPanel.Children.Clear();
     }
 
     /// <summary>
@@ -90,10 +99,10 @@ public partial class AddWebsite : UserControl
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The event data.</param>
-    private void WriteUserInputsToDatabase(object sender, RoutedEventArgs args)
+    private void WriteUserInputsToDatabase(object? sender, RoutedEventArgs args)
     {
         Login = _password != null && _username != null;
-        DatabaseHandler website = new DatabaseHandler(WebsiteName, WebsiteLink, XPath, Id, Content, Login, Username, Password);
+        DatabaseHandler website = new DatabaseHandler(WebsiteName, WebsiteLink, ClicksList, XPath, Id, Content, Login, Username, Password);
         website.CreateWebsiteContent();
         CancelRequested.Invoke(this, EventArgs.Empty);
         ClearAllFields();
@@ -107,17 +116,19 @@ public partial class AddWebsite : UserControl
     private async void Scrape(object sender, RoutedEventArgs args)
     {
         var loadingDialog = new ScrapeDialog();
+        StoreClicksData();
         var selenium = new Selenium();
         Login = _password != null && _username != null;
 
         try
         {
             loadingDialog.Show();
-            IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, XPath, Id, Username, Password));
+            IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
             loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}");
             Scraping = true;
             Content = element.Text;
-            SaveBtn.IsEnabled = IsInputSavable();
+            SaveBtn.IsEnabled = true;
+            ToolTip.SetTip(SaveBtn, AvaloniaProperty.UnsetValue);
         }
         catch (Exception ex)
         {
@@ -125,6 +136,8 @@ public partial class AddWebsite : UserControl
             notification.CreateNotification();
 
             loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}");
+            SaveBtn.IsEnabled = false;
+            ToolTip.SetTip(SaveBtn, "Scrape to save your inputs");
         }
         finally
         {
@@ -187,6 +200,8 @@ public partial class AddWebsite : UserControl
     /// <param name="args">The event data.</param>
     private void OnTextboxInputChanged(object sender, RoutedEventArgs args)
     {
+        SaveBtn.IsEnabled = false;
+        ToolTip.SetTip(SaveBtn, "Scrape to save your inputs");
         if (sender is TextBox textBox)
         {
             Console.WriteLine(textBox.Name);
@@ -195,28 +210,25 @@ public partial class AddWebsite : UserControl
                 case "WebsiteNameTextBox":
                     WebsiteName = textBox.Text;
                     Console.WriteLine($"{WebsiteName}");
-                    SaveBtn.IsEnabled = IsInputSavable();
                     break;
 
                 case "WebsiteLinkTextBox":
                     WebsiteLink = textBox.Text;
                     Console.WriteLine($"{WebsiteLink}");
-                    SaveBtn.IsEnabled = IsInputSavable();
                     break;
 
                 case "PathToElementTextBox":
                     XPath = IsId ? null : textBox.Text;
                     Id = IsId ? textBox.Text : null;
-                    SaveBtn.IsEnabled = IsInputSavable();
                     break;
 
                 case "PasswordTextBox":
-                       Password = textBox.Text;
-                       break;
+                    Password = textBox.Text;
+                    break;
                    
                 case "UsernameTextBox": 
-                       Username = textBox.Text;
-                       break;
+                    Username = textBox.Text;
+                    break;
 
                 default:
                     Console.WriteLine("Unknown Textbox");
@@ -244,8 +256,8 @@ public partial class AddWebsite : UserControl
         SetButtonState(XPathButton, true);
         SetButtonState(IdButton, false);
         PathToElementTextBox.Watermark = "XPath";
-        XPath = PathToElementTextBox.Text;
-        Id = null;
+        //XPath = PathToElementTextBox.Text;
+        //Id = null;
         IsId = false;
     }
 
@@ -259,9 +271,66 @@ public partial class AddWebsite : UserControl
         SetButtonState(XPathButton, false);
         SetButtonState(IdButton, true);
         PathToElementTextBox.Watermark = "Id";
-        XPath = null;
-        Id = PathToElementTextBox.Text;
+        //XPath = null;
+        //Id = PathToElementTextBox.Text;
         IsId = true;
+    }
+    
+    /// <summary>
+    /// Handles the click event of the ClicksButton. (Add clicks)
+    /// Creates a new <see cref="DockPanel"/> containing a <see cref="TextBox"/> and a delete <see cref="Button"/>.
+    /// The <see cref="TextBox"/> is initialized with a unique watermark indicating the click count,
+    /// and the <see cref="Button"/> allows for removing the <see cref="DockPanel"/> from the <see cref="ClicksStackPanel"/>.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event data.</param>
+    private void OnClicksButtonClick(object sender, RoutedEventArgs e)
+    {
+        clickCount++;
+        var dockPanel = new DockPanel
+        {
+            Margin = new Thickness(0, 5, 0, 0)
+        };
+        
+        var textBox = new TextBox
+        {
+            Name = $"ClicksTextBox{clickCount}",
+            Watermark = $"XPath Click",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+        };
+        dockPanel.Children.Add(textBox);
+        DockPanel.SetDock(textBox, Dock.Left);
+        var deleteButton = new Button
+        {
+            Name = $"DeleteButton{clickCount}", 
+            Content = "X",
+            Margin = new Thickness(5, 0, 0, 0)
+        };
+        deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+        dockPanel.Children.Add(deleteButton);
+        DockPanel.SetDock(deleteButton, Dock.Right);
+        
+        ClicksStackPanel.Children.Add(dockPanel);
+    }
+    
+    /// <summary>
+    /// Stores the current data from all <see cref="TextBox"/> controls contained within <see cref="ClicksStackPanel"/> into the <see cref="ClicksList"/>.
+    /// Clears the existing entries in <see cref="ClicksList"/> before populating it with the current <see cref="TextBox"/> contents.
+    /// </summary>
+    private void StoreClicksData()
+    {
+        ClicksList.Clear();
+        foreach (var child in ClicksStackPanel.Children)
+        {
+            if (child is DockPanel dockPanel)
+            {
+                var textBox = dockPanel.Children.OfType<TextBox>().FirstOrDefault();
+                if (textBox != null)
+                {
+                    ClicksList.Add(textBox.Text);
+                }
+            }
+        }
     }
 
     /// <summary>

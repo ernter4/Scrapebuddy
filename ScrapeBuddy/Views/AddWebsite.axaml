@@ -5,7 +5,6 @@
              xmlns:local="clr-namespace:ScrapeBuddy.ViewModels"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="720"
              x:Class="ScrapeBuddy.ViewModels.AddWebsite"
-             Padding="30"
              x:DataType="local:AddWebsite">
     <UserControl.Resources>
         <StreamGeometry x:Key="home_regular">M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H32.075C29.9625 43 28.25 41.2599 28.25 39.1134V29.7492C28.25 29.0337 27.6792 28.4536 26.975 28.4536H21.025C20.3208 28.4536 19.75 29.0337 19.75 29.7492V39.1134C19.75 41.2599 18.0375 43 15.925 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H15.925C16.6292 40.4089 17.2 39.8289 17.2 39.1134V29.7492C17.2 27.6027 18.9125 25.8626 21.025 25.8626H26.975C29.0875 25.8626 30.8 27.6027 30.8 29.7492V39.1134C30.8 39.8289 31.3708 40.4089 32.075 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z</StreamGeometry>
@@ -53,6 +52,12 @@
         <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" Background="PaleGreen">
             <TextBox Grid.Column="1" Grid.Row="1" Watermark="Website Name" x:Name="WebsiteNameTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,0"/>
             <TextBox Grid.Column="1" Grid.Row="3" Watermark="Website Link" x:Name="WebsiteLinkTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,10"/>
+            <DockPanel Grid.Column="1" Grid.Row="4" Width="200">
+                <Button DockPanel.Dock="Top" x:Name="ClicksButton" Click="OnClicksButtonClick" Content="Add Click" Margin="0,15,0,0"/>
+                <StackPanel x:Name="ClicksStackPanel" DockPanel.Dock="Bottom" Margin="0,0,0,20" Orientation="Vertical">
+                    <!-- Dynamic content will be added here -->
+                </StackPanel>
+            </DockPanel>
             <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,15,0,0">
                 <Button x:Name="IdButton" Content="ID" Click="OnIDClicked"
                         Classes="ToggleButton LeftToggle" />
@@ -73,12 +78,7 @@
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" Background="Aqua">
             <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="Scrape">
             </Button>
-            <StackPanel Grid.Column="3">
-                <Button x:Name="SaveBtn"  Content="Save" Click="WriteUserInputsToDatabase" />
-                <ToolTip.Tip>
-                    <TextBlock>Conditions for content to be savable</TextBlock>
-                </ToolTip.Tip>
-            </StackPanel>
+            <Button Grid.Column="3" x:Name="SaveBtn" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase"/>
             
         </Grid>
     </Grid>
