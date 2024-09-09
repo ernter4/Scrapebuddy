@@ -413,6 +413,82 @@ namespace ScrapeBuddy.Data
 
             return resultTable;
         }
+        
+        /// <summary>
+        /// Decrypts all user data from the database.
+        /// </summary>
+        public List<DecryptedUser> DecryptAllUserData()
+        {
+            var decryptedUsers = new List<DecryptedUser>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                SELECT 
+                    id, 
+                    username, 
+                    password, 
+                    salt, 
+                    IV 
+                FROM 
+                    users";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            byte[] salt = reader.GetFieldValue<byte[]>(3);
+                            byte[] IV = reader.GetFieldValue<byte[]>(4);
+                            byte[] encryptedUsername = reader.GetFieldValue<byte[]>(1);
+                            byte[] encryptedPassword = reader.GetFieldValue<byte[]>(2);
+
+                            // Decrypt data
+                            Decryption decryption = new Decryption(encryptedUsername, encryptedPassword, salt, IV);
+                            var result = decryption.DecryptStringFromBytes_Aes();
+
+                            decryptedUsers.Add(new DecryptedUser
+                            {
+                                Id = reader.GetInt32(0),
+                                Username = result.username,
+                                Password = result.password
+                            });
+                        }
+                    }
+                }
+            }
+
+            return decryptedUsers;
+        }
+
+        /// <summary>
+        /// Re-encrypts and updates user data in the database with a new passphrase.
+        /// </summary>
+        public void ReEncryptUserData(List<DecryptedUser> decryptedUsers)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                foreach (var user in decryptedUsers)
+                {
+                    Encryption encryption = new Encryption(user.Username, user.Password);
+                    var result = encryption.EncryptStringToBytes_Aes();
+
+                    var command = new SqliteCommand("UPDATE users SET username = @username, password = @password, salt = @salt, IV = @IV WHERE id = @id", connection);
+                    command.Parameters.AddWithValue("@username", result.encUsername);
+                    command.Parameters.AddWithValue("@password", result.encPassword);
+                    command.Parameters.AddWithValue("@salt", result.salt);
+                    command.Parameters.AddWithValue("@IV", result.IV);
+                    command.Parameters.AddWithValue("@id", user.Id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
     
     /// <summary>
@@ -442,5 +518,15 @@ namespace ScrapeBuddy.Data
         public string title { get; set; }
         public string notification { get; set; }
         public bool dismiss { get; set; }
+    }
+    
+    /// <summary>
+    /// Represents user data used for change passphrase.
+    /// </summary>
+    public class DecryptedUser
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

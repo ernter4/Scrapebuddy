@@ -25,6 +25,7 @@ namespace ScrapeBuddy.ViewModels
         {
             InitializeComponent();
         }
+        
 
         /// <summary>
         /// Handles the click event for the login button.
@@ -84,7 +85,7 @@ namespace ScrapeBuddy.ViewModels
         /// <returns>A task representing the asynchronous operation.</returns>
         public async void ForgotPasswordClick(object? sender, RoutedEventArgs e)
         {
-            var confirmationDialog = new ResetPassphraseWindow();
+            var confirmationDialog = new YesNoDialog();
             bool result = await confirmationDialog.ShowDialog<bool>(this);
 
             if (result)
@@ -92,7 +93,7 @@ namespace ScrapeBuddy.ViewModels
                 DatabaseHandler.DeleteAllTables();
                 Hashing.DeleteHash();
 
-                var initialWindow = new CreatePassphraseWindow();
+                var initialWindow = new CreatePassphraseWindow(false, null, null);
                 initialWindow.Show();
         
                 Close();

@@ -22,6 +22,7 @@ namespace ScrapeBuddy.ViewModels
         
         private AddWebsite NewWebsiteView { get; set; }
         private NotificationViewModel NotificationsView { get; set; }
+        private SettingsViewModel SettingsView { get; set; }
         private RegisteredWebsite RegisteredWebsiteView { get; set; }
 
         public static List<WebsiteInfo> StoredUserWebsites { get; set; }
@@ -37,15 +38,22 @@ namespace ScrapeBuddy.ViewModels
             NewWebsiteView = new AddWebsite();
             NotificationsView = new NotificationViewModel();
             RegisteredWebsiteView = new RegisteredWebsite();
+            SettingsView = new SettingsViewModel();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
             CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView); 
-            NotificationsBtn.Click += (sender, args) => RenderView(sender, args, NotificationsView); 
+            NotificationsBtn.Click += (sender, args) => RenderView(sender, args, NotificationsView);
+            SettingsBtn.Click += (sender, args) =>
+            {
+                SettingsView.LoadSettings();
+                RenderView(sender, args, SettingsView);
+            };
             SearchTextBox.TextChanged += UpdateWebsiteListBox;
             RegisteredWebsiteListBox.SelectionChanged += RegisteredWebsiteListBox_SelectionChanged;
             RegisteredWebsiteListBox.Tapped += (sender, args) => RenderView(sender, args, RegisteredWebsiteView);
             NewWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NewWebsiteView);
             RegisteredWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, RegisteredWebsiteView);
             NotificationsView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NotificationsView);
+            SettingsView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, SettingsView);
         }
 
         /// <summary>
@@ -227,4 +235,3 @@ namespace ScrapeBuddy.ViewModels
         public string? WebsiteName { get; set; }
     }
 }
-

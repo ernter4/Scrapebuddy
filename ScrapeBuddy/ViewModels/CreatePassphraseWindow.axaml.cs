@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ScrapeBuddy.Logic;
+using ScrapeBuddy.Data;
 using ScrapeBuddy.ViewModels;
 
 namespace ScrapeBuddy.ViewModels
@@ -15,13 +16,22 @@ namespace ScrapeBuddy.ViewModels
     public partial class CreatePassphraseWindow : Window
     {
         private NotificationViewModel NotificationsView { get; set; }
+        private bool reset = false;
+        private List<DecryptedUser>? users;
+        private (string email, string name)? emailAndName;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="CreatePassphraseWindow"/> class.
         /// </summary>
-        public CreatePassphraseWindow()
+        /// <param name="reset">If the user wants to reset the passphrase</param>
+        /// <param name="users">The userdata which needs to be encrypted with the new passphrase.</param>
+        /// <param name="emailAndName">The user email and name which needs to be encrypted with the new passphrase.</param>
+        public CreatePassphraseWindow(bool reset, List<DecryptedUser>?  users, (string email, string name)? emailAndName)
         {
             InitializeComponent();
+            this.users = users;
+            this.reset = reset;
+            this.emailAndName = emailAndName;
             NotificationsView = new NotificationViewModel();
         }
 
@@ -38,13 +48,32 @@ namespace ScrapeBuddy.ViewModels
 
             if (password == passwordConfirm)
             {
-                // Validate password
                 var errors = PasswordValidator.ValidatePassword(password);
                 if (errors.All(passwordValid => passwordValid))
                 {
                     Hashing hash = new Hashing(password);
                     await hash.GenerateHashAsync();
                     hash.StoreMasterKey();
+                    
+                    if (reset)
+                    {
+                        Hashing.DeleteHash();
+                        DatabaseHandler _databaseHandler = new DatabaseHandler();
+                        _databaseHandler.ReEncryptUserData(users);
+                        if (emailAndName != null)
+                        { 
+                            var (email, name) = emailAndName.Value;
+                            Encryption enc = new Encryption(email, name);
+                            var resultEnc = enc.EncryptStringToBytes_Aes();
+                            byte[] Email = resultEnc.encUsername;
+                            byte[] Name = resultEnc.encPassword;
+                            byte[] IV = resultEnc.IV;
+                            byte[] Salt = resultEnc.salt;
+                            
+                            var settingsManager = new SettingsManager();
+                            settingsManager.UpdateSettings(Email, Name, Salt, IV);
+                        }
+                    }
                     
                     var splashScreen = new LoadingWindow();
                     splashScreen.Show();
@@ -57,9 +86,7 @@ namespace ScrapeBuddy.ViewModels
                         DataContext = new MainWindow(),
                     };
                     mainWindow.Show();
-                    
                     Close();
-
                     splashScreen.Close();
                 }
             }

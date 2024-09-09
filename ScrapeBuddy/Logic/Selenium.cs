@@ -267,6 +267,18 @@ namespace ScrapeBuddy.Logic
                         DatabaseHandler notification = new DatabaseHandler($"{item.name} had changes", $"Content changed from {item.content} to {element.Text}");
                         notification.CreateNotification();
                         DatabaseHandler.UpdateContent(item.id, element.Text);
+                        SettingsManager _settingsManager = new SettingsManager();
+                        SettingsModel _settings = _settingsManager.LoadSettings();
+                        if (_settings.EmailNotificationsEnabled)
+                        {
+                            Decryption dec = new Decryption(_settings.Email, _settings.Name, _settings.Salt, _settings.IV);
+                            var resultDec = dec.DecryptStringFromBytes_Aes();
+                            string _email = resultDec.username;
+                            string _name = resultDec.password;
+                            Email emailclient = new Email();
+                            emailclient.Send(_email, $"{item.name} had changes", _name,$"Content changed from {item.content} to {element.Text}");
+
+                        }
                     }
                     
                 }

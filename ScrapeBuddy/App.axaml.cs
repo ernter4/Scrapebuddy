@@ -41,7 +41,7 @@ namespace ScrapeBuddy
                 }
                 else
                 {
-                    initialWindow = new CreatePassphraseWindow();
+                    initialWindow = new CreatePassphraseWindow(false, null, null);
                 }
 
                 desktop.MainWindow = initialWindow;

@@ -31,7 +31,7 @@
                 <Button Margin="5" Height="30" x:Name="NotificationsBtn">
                     <Path Data="{StaticResource channel_notifications_regular}" Fill="Gold" Margin="5" ></Path>
                 </Button>
-                <Button Margin="5" Height="30">
+                <Button Margin="5" Height="30" x:Name="SettingsBtn">
                     <Path Data="{StaticResource settings_regular}" Fill="Gray" Stretch="Uniform"></Path>
                 </Button>
             </StackPanel>
