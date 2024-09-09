@@ -6,6 +6,15 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="AppStyles.axaml"></StyleInclude>
     </Application.Styles>
+             
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="GlobalRessources.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 
 </Application>

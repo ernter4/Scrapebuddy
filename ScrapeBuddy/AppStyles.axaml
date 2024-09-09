@@ -1,10 +1,105 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
+        <Border Padding="20" Background="{DynamicResource BackgroundDark}">
+            <!-- <Button Classes="btn_white" >Button</Button> -->
+            <TextBox>TextBox</TextBox>
         </Border>
     </Design.PreviewWith>
+    
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="../GlobalRessources.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
 
     <!-- Add Styles Here -->
+    <!-- dark buttons -->
+    <Style Selector="Button.btn_dark">
+        <Setter Property="Background" Value="{DynamicResource ButtonDark}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonWhite}"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>    
+        <Setter Property="CornerRadius" Value="15"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonDark}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonWhiteHover}"/>
+        </Style>
+        
+        <Style Selector="^:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonDarkPressed}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonWhitePressed}"/>
+        </Style>
+        
+        <Style Selector="^:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonDarkDisabled}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonWhiteDisabled}"></Setter>
+        </Style>
+    </Style>
+    
+    <Style Selector="Button.btn_dark Path">
+        <Setter Property="Fill" Value="{DynamicResource ButtonWhite}"></Setter>
+        
+        <Style Selector="^:pointerover">
+            <Setter Property="Fill" Value="{DynamicResource ButtonWhiteHover}"></Setter>
+        </Style>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="Fill" Value="{DynamicResource ButtonWhitePressed}"></Setter>
+        </Style>
+        
+        <Style Selector="^:disabled">
+            <Setter Property="Fill" Value="{DynamicResource ButtonWhiteDisabled}"></Setter>
+        </Style>
+    </Style>
+    
+    <!-- white buttons -->
+    <Style Selector="Button.btn_white">
+        <Setter Property="Background" Value="{DynamicResource ButtonWhite}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonDark}"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>    
+        <Setter Property="CornerRadius" Value="15"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonWhiteHover}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonDarkHover}"/>
+        </Style>
+        
+        <Style Selector="^:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonWhitePressed}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonDarkPressed}"/>
+        </Style>
+        
+        <Style Selector="^:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ButtonWhiteDisabled}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonDarkDisabled}"></Setter>
+        </Style>
+    </Style>
+    
+    <Style Selector="Button.btn_white Path">
+        <Setter Property="Fill" Value="{DynamicResource ButtonDark}"></Setter>
+        
+        <Style Selector="^:pointerover">
+            <Setter Property="Fill" Value="{DynamicResource ButtonDarkHover}"></Setter>
+        </Style>
+        
+        <Style Selector="^:pressed">
+            <Setter Property="Fill" Value="{DynamicResource ButtonDarkPressed}"></Setter>
+        </Style>
+        
+        <Style Selector="^:disabled">
+            <Setter Property="Fill" Value="{DynamicResource ButtonDarkDisabled}"></Setter>
+        </Style>
+    </Style>
+    
 </Styles>

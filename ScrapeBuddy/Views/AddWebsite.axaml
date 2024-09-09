@@ -37,23 +37,23 @@
         </Style>
     </UserControl.Styles>
     
-    <Grid RowDefinitions="Auto, Auto, Auto">
+    <Grid RowDefinitions="Auto, Auto, Auto" Background="{DynamicResource BackgroundDark}">
         <!-- cancel and info -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Background="Aqua">
-            <Button Grid.Column="0" IsCancel="True" Click="OnCancelView" Height="35">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" >
+            <Button Grid.Column="0" Classes="btn_dark" IsCancel="True" Click="OnCancelView" Height="35">
                 <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
-            <Button Grid.Column="2" Height="35" Click="ClearFields">
+            <Button Grid.Column="2" Classes="btn_dark" Height="35" Click="ClearFields">
                 <Path Data="{StaticResource delete_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
         </Grid>
         
         <!-- Website -->
-        <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" Background="PaleGreen">
+        <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" >
             <TextBox Grid.Column="1" Grid.Row="1" Watermark="Website Name" x:Name="WebsiteNameTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,0"/>
             <TextBox Grid.Column="1" Grid.Row="3" Watermark="Website Link" x:Name="WebsiteLinkTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,10"/>
             <DockPanel Grid.Column="1" Grid.Row="4" Width="200">
-                <Button DockPanel.Dock="Top" x:Name="ClicksButton" Click="OnClicksButtonClick" Content="Add Click" Margin="0,15,0,0"/>
+                <Button DockPanel.Dock="Top" x:Name="ClicksButton" Classes="btn_dark" Click="OnClicksButtonClick" Content="Add Click" Margin="0,15,0,0"/>
                 <StackPanel x:Name="ClicksStackPanel" DockPanel.Dock="Bottom" Margin="0,0,0,20" Orientation="Vertical">
                     <!-- Dynamic content will be added here -->
                 </StackPanel>
@@ -66,7 +66,7 @@
             </StackPanel>
             <TextBox Grid.Column="1" Grid.Row="7" x:Name="PathToElementTextBox" Watermark="Id" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,5,0,0"/>
             <DockPanel Grid.Column="1" Grid.Row="9" Width="200">
-                <Button DockPanel.Dock="Top" x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Add Credentials" Margin="0,15,0,10"/>
+                <Button DockPanel.Dock="Top" Classes="btn_dark" x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Add Credentials" Margin="0,15,0,10"/>
                 <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
                     <TextBox Grid.Column="0" x:Name="UsernameTextBox" Watermark="Username" IsVisible="False"></TextBox>
                     <TextBox Grid.Column="2" x:Name="PasswordTextBox" Watermark="Password" IsVisible="False" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
@@ -75,10 +75,10 @@
         </Grid>
         
         <!-- scrape and save -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" Background="Aqua">
-            <Button x:Name="ScrapeBtn" Grid.Column="1" Content="Scrape" Click="Scrape">
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" >
+            <Button Grid.Column="1" x:Name="ScrapeBtn" Classes="btn_dark" Content="Scrape" Click="Scrape">
             </Button>
-            <Button Grid.Column="3" x:Name="SaveBtn" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase"/>
+            <Button Grid.Column="3" x:Name="SaveBtn" Classes="btn_dark" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase"/>
             
         </Grid>
     </Grid>

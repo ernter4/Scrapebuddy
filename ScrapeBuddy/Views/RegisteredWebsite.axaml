@@ -14,6 +14,7 @@
     </UserControl.Resources>
     
     <UserControl.Styles>
+        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
         <Style Selector="ToggleButton PathIcon.audio-on">
             <Setter Property="IsVisible" Value="False"/>
         </Style>

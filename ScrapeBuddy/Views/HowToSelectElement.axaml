@@ -5,6 +5,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ScrapeBuddy.ViewModels.HowToSelectElement">
     
+    <UserControl.Styles>
+        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+    </UserControl.Styles>
+    
     <StackPanel>
         <TextBlock>Hello</TextBlock>
         <TextBlock>This is a Test</TextBlock>

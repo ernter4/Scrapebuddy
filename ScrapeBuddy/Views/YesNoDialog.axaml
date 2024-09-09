@@ -4,6 +4,9 @@
         Title="Reset Passphrase"
         Width="300"
         Height="150">
+    <Window.Styles>
+        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+    </Window.Styles>
     <StackPanel Margin="10">
         <TextBlock Text="Are you sure you want to reset your password? This will delete all your scraping data and cannot be undone."
                    TextWrapping="Wrap" Margin="0,0,0,50"  x:Name="ConfirmationMessageTextBlock" />

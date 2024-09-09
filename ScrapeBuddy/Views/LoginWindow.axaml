@@ -3,6 +3,9 @@
         x:Class="ScrapeBuddy.ViewModels.LoginWindow"
         Title="Login"
         Width="500" Height="500">
+    <Window.Styles>
+        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+    </Window.Styles>
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"> 
         <TextBlock Text="Enter Password:" Margin="0,0,0,10" />
         <TextBox x:Name="PasswordBox" Classes="revealPasswordButton" PasswordChar="*" Watermark="Enter your password" Width="200" TextChanged="PasswordBox_TextChanged"/>

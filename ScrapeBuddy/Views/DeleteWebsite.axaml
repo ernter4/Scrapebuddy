@@ -10,7 +10,8 @@
         
         
 <Window.Styles>
-        <!-- Confirm Button Style -->
+    <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+    <!-- Confirm Button Style -->
         <Style Selector="Button.confirm">
             <Setter Property="Background" Value="#4CAF50"/> <!-- Grün -->
             <Setter Property="Foreground" Value="White"/>

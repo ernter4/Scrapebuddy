@@ -7,6 +7,9 @@
         Title="ScrapeBuddy"
         Width="500" Height="500"
         >
+    <Window.Styles>
+        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+    </Window.Styles>
     <Panel Background="#1e1e1e">
 
 
