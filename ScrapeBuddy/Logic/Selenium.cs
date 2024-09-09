@@ -5,8 +5,10 @@ using OpenQA.Selenium;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.Notifications;
 using ScrapeBuddy.Exceptions;
 using ScrapeBuddy.Data;
+using ScrapeBuddy.ViewModels;
 namespace ScrapeBuddy.Logic
 {
     /// <summary>
@@ -24,7 +26,7 @@ namespace ScrapeBuddy.Logic
         /// Initializes a new instance of the <see cref="Selenium"/> class and navigates to the specified URL.
         /// </summary>
         /// <param name="url">The URL to navigate to upon initialization.</param>
-         public Selenium(string url = "")
+        public Selenium(string url = "")
         {
             var options = new ChromeOptions();
             options.AddArgument("--disable-search-engine-choice-screen");
@@ -34,9 +36,11 @@ namespace ScrapeBuddy.Logic
             
             var service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true; 
+            
+            TimeSpan commandTimeout = TimeSpan.FromSeconds(20);
 
-            _driver = new ChromeDriver(service, options);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(_implicit_Wait); // if element is not reachable the driver tries for 2 secs before failing.
+            _driver = new ChromeDriver(service, options, commandTimeout);
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(_implicit_Wait); 
             if (url != "")
             {
                 _driver.Navigate().GoToUrl(url);
@@ -114,30 +118,46 @@ namespace ScrapeBuddy.Logic
         /// <param name="username">The username to be used for login</param>
         /// <param name="password">The password to be used for login</param>
         /// <returns>desired Webelement</returns>
-
-        public IWebElement Scrape(string url,bool login, List<string>? elementstoclick, string? xpath  ,string? id  , string? username, string? password)
+        public IWebElement Scrape(string url, bool login, List<string>? elementstoclick, string? xpath, string? id, string? username, string? password)
         {
-            Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath + " Id: " + id + " Username: " + username+ " Password: " + password);
-            _driver.Navigate().GoToUrl(url);
-            if (login)
+            try
             {
-                Login(username, password);
+                Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath + " Id: " + id + " Username: " + username + " Password: " + password);
+                
+                _driver.Navigate().GoToUrl(url);
+                
+                if (login)
+                {
+                    Login(username, password);
+                }
+                
+                Click(elementstoclick);
+                
+                IWebElement element;
+                if (xpath is null)
+                {
+                    element = GetElementById(id);
+                }
+                else
+                {
+                    element = GetElementByXPath(xpath);
+                }
+
+                return element; 
             }
-            Click(elementstoclick);
-            
-            IWebElement element;
-            if (xpath is null)
+            catch (WebDriverException ex)
             {
-                element= GetElementById(id);
+                Console.WriteLine($"WebDriverException during scraping: {ex.Message}");
+                throw new Exception($"Scrape failed for URL {url}: {ex.Message}", ex); 
             }
-            else
+            catch (Exception ex)
             {
-                element = GetElementByXPath(xpath);
+                Console.WriteLine($"Exception during scraping: {ex.Message}");
+                throw new Exception($"General error during scraping for URL {url}: {ex.Message}", ex); 
             }
-            
-        
-            return element;
         }
+
+        
         /// <summary>
         /// /// Scrapes Website to get usernamefields for login.
         /// </summary>
@@ -206,9 +226,6 @@ namespace ScrapeBuddy.Logic
                element= GetElementByXPath(xpath);
                element.Click();
             }
-            
-            
-
         }
 
         /// <summary>
@@ -220,7 +237,7 @@ namespace ScrapeBuddy.Logic
             _driver.Quit();
         }
     }
-    
+
     /// <summary>
     /// Class which connects scraping logic with the database.
     /// </summary>
@@ -257,9 +274,21 @@ namespace ScrapeBuddy.Logic
                 {
                     DatabaseHandler notification = new DatabaseHandler($"Scraping for {item.name} failed: ", ex.Message);
                     notification.CreateNotification();
+                    
                 }
-                selenium.Quit();
+                finally
+                {
+                    try
+                    {
+                        selenium.Quit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception during Quit for {item.name}: {ex.Message}");
+                    }
+                }
             }
+            
             Console.WriteLine("Scraping complete");
         }    
     }

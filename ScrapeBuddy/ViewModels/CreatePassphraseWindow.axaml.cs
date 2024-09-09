@@ -14,12 +14,15 @@ namespace ScrapeBuddy.ViewModels
     /// </summary>
     public partial class CreatePassphraseWindow : Window
     {
+        private NotificationViewModel NotificationsView { get; set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="CreatePassphraseWindow"/> class.
         /// </summary>
         public CreatePassphraseWindow()
         {
             InitializeComponent();
+            NotificationsView = new NotificationViewModel();
         }
 
         /// <summary>

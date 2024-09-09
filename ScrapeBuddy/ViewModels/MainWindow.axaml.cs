@@ -21,9 +21,11 @@ namespace ScrapeBuddy.ViewModels
         private int? _selectedWebsiteId;
         
         private AddWebsite NewWebsiteView { get; set; }
+        private NotificationViewModel NotificationsView { get; set; }
         private RegisteredWebsite RegisteredWebsiteView { get; set; }
 
         public static List<WebsiteInfo> StoredUserWebsites { get; set; }
+        private bool _isScraping = false;
 
         /// <summary>
         /// Initializes the window and its components.
@@ -33,14 +35,17 @@ namespace ScrapeBuddy.ViewModels
             InitializeComponent();
             SetupTimer();
             NewWebsiteView = new AddWebsite();
+            NotificationsView = new NotificationViewModel();
             RegisteredWebsiteView = new RegisteredWebsite();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
-            CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView);  
+            CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView); 
+            NotificationsBtn.Click += (sender, args) => RenderView(sender, args, NotificationsView); 
             SearchTextBox.TextChanged += UpdateWebsiteListBox;
             RegisteredWebsiteListBox.SelectionChanged += RegisteredWebsiteListBox_SelectionChanged;
             RegisteredWebsiteListBox.Tapped += (sender, args) => RenderView(sender, args, RegisteredWebsiteView);
             NewWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NewWebsiteView);
             RegisteredWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, RegisteredWebsiteView);
+            NotificationsView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NotificationsView);
         }
 
         /// <summary>
@@ -110,22 +115,46 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void SetupTimer()
         {
+            if (_timer != null) 
+            {
+                _timer.Stop();
+                _timer.Elapsed -= OnTimedEvent;
+            }
+    
             _timer = new Timer
             {
                 Interval = 300000 // 5 minutes
             };
+    
             _timer.Elapsed += OnTimedEvent;
             _timer.Start();
         }
+
 
         /// <summary>
         /// Starts the scraping process when the timer elapses.
         /// </summary>
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            Console.WriteLine("Start scraping now");
-            Scrape.ScrapeItems();
+            if (_isScraping) 
+            {
+                Console.WriteLine("Scraping is already in progress, skipping...");
+                return; // Prevent overlapping scrapes
+            }
+
+            _isScraping = true;
+    
+            try
+            {
+                Console.WriteLine("Start scraping now");
+                Scrape.ScrapeItems(); // Your scraping logic
+            }
+            finally
+            {
+                _isScraping = false; // Ensure this gets reset even if scraping fails
+            }
         }
+
 
         /// <summary>
         /// Disposes of the timer when the window closes.
@@ -165,12 +194,6 @@ namespace ScrapeBuddy.ViewModels
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
             UpdateWebsiteListBox(null, null);
         }
-        
-        private void OnButtonTapped(object sender, RoutedEventArgs e)
-        {
-            e.Handled = true; // Markiert das Event als behandelt, um zu verhindern, dass es weiter propagiert
-        }
-
         
         /// <summary>
         /// opens confirmation dialog for deleting registered Website

@@ -11,6 +11,8 @@ using ScrapeBuddy.Exceptions;
 
 namespace ScrapeBuddy.ViewModels
 {
+    
+    
     /// <summary>
     /// Represents the login window where users can enter their credentials.
     /// </summary>

@@ -364,7 +364,9 @@ namespace ScrapeBuddy.Data
                     notification,
                     dismiss
                 FROM 
-                    notification";
+                    notification
+                ORDER BY 
+                    id DESC";
 
                 using (var command = new SqliteCommand(query, connection))
                 {

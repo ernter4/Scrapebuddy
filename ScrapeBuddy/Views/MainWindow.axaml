@@ -28,7 +28,7 @@
         <DockPanel Grid.Column="0"  Background="Orange">
             <!-- Benachrichtigungssymbole oben -->
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Background="Beige">
-                <Button Margin="5" Height="30">
+                <Button Margin="5" Height="30" x:Name="NotificationsBtn">
                     <Path Data="{StaticResource channel_notifications_regular}" Fill="Gold" Margin="5" ></Path>
                 </Button>
                 <Button Margin="5" Height="30">
@@ -78,9 +78,9 @@
         </DockPanel>
 
         
-        <StackPanel Grid.Column="1" x:Name="MainContent">
-            <!-- dynamically load content in here -->
-        </StackPanel>
+        <Grid Grid.Column="1" x:Name="MainContent">
+            <!-- Dynamically load content in here -->
+        </Grid>
     </Grid> 
 
     
