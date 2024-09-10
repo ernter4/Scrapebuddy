@@ -12,6 +12,7 @@ using Avalonia.Interactivity;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 
 namespace ScrapeBuddy.ViewModels
@@ -22,6 +23,7 @@ namespace ScrapeBuddy.ViewModels
     public partial class MainWindow : Window
     {
         private Timer _timer;
+        private Timer _notificationsTimer;
         private int? _selectedWebsiteId;
         
         private AddWebsite NewWebsiteView { get; set; }
@@ -39,8 +41,10 @@ namespace ScrapeBuddy.ViewModels
         {
             InitializeComponent();
             SetupTimer();
+            SetupNotificationsTimer();
             SettingsViewModel.ThemeChanged += SetTheme;
             SetTheme(null, null);
+            NotificationsTextBlock.Text = DatabaseHandler.GetNotificationsUndismissed().ToString();
             
             NewWebsiteView = new AddWebsite();
             NotificationsView = new NotificationViewModel();
@@ -48,7 +52,11 @@ namespace ScrapeBuddy.ViewModels
             SettingsView = new SettingsViewModel();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
             CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView); 
-            NotificationsBtn.Click += (sender, args) => RenderView(sender, args, NotificationsView);
+            NotificationsBtn.Click += (sender, args) =>
+            {
+                RenderView(sender, args, NotificationsView);
+                NotificationsView.LoadNotifications();
+            };
             SettingsBtn.Click += (sender, args) =>
             {
                 SettingsView.LoadSettings();
@@ -126,7 +134,7 @@ namespace ScrapeBuddy.ViewModels
         }
 
         /// <summary>
-        /// Configures and starts the timer for periodic events.
+        /// Configures and starts the timer for scraping events.
         /// </summary>
         private void SetupTimer()
         {
@@ -135,7 +143,7 @@ namespace ScrapeBuddy.ViewModels
                 _timer.Stop();
                 _timer.Elapsed -= OnTimedEvent;
             }
-    
+
             _timer = new Timer
             {
                 Interval = 300000 // 5 minutes
@@ -143,6 +151,46 @@ namespace ScrapeBuddy.ViewModels
     
             _timer.Elapsed += OnTimedEvent;
             _timer.Start();
+        }
+        
+        /// <summary>
+        /// Configures and starts the timer for notification events.
+        /// </summary>
+        private void SetupNotificationsTimer()
+        {
+            if (_notificationsTimer != null) 
+            {
+                _notificationsTimer.Stop();
+                _notificationsTimer.Elapsed -= OnNotificationsTimerEvent;
+            }
+
+            _notificationsTimer = new Timer
+            {
+                Interval = 1000 // 1 second
+            };
+
+            _notificationsTimer.Elapsed += OnNotificationsTimerEvent;
+            _notificationsTimer.Start();
+        }
+        
+        /// <summary>
+        /// Updates the Notification symbol.
+        /// </summary>
+        private void OnNotificationsTimerEvent(object sender, ElapsedEventArgs e)
+        {
+            Dispatcher.UIThread.InvokeAsync(() => 
+            {
+                int undismissedCount = DatabaseHandler.GetNotificationsUndismissed();
+                if (undismissedCount > 0)
+                {
+                    NotificationsTextBlock.Text = undismissedCount.ToString();
+                    NotificationBadge.IsVisible = true;
+                }
+                else
+                {
+                    NotificationBadge.IsVisible = false;
+                }
+            });
         }
 
 

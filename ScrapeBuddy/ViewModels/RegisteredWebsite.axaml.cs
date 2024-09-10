@@ -194,7 +194,7 @@ namespace ScrapeBuddy.ViewModels
 
                 IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
 
-                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}");
+                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}", true);
                 Scraping = true;
                 Content = element.Text;
                 if (IsEditable)
@@ -208,7 +208,7 @@ namespace ScrapeBuddy.ViewModels
                 DatabaseHandler notification = new DatabaseHandler($"Scraping for {WebsiteName} failed: ", ex.Message);
                 notification.CreateNotification();
 
-                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}");
+                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}", false);
             }
             finally
             {

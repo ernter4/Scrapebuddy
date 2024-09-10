@@ -26,7 +26,7 @@ public class LoginException : ScrapeFailedException
 {
     public LoginException(string message):base(message){}
     public LoginException(string message, Exception innerException) : base(message +": " + innerException.Message, innerException) {}
-    public LoginException(Exception innerException):base($"Login Failed: {innerException.Message}",innerException){}
+    public LoginException(Exception innerException):base($"Login Failed",innerException){}
     
 }
 

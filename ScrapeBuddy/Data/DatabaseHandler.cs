@@ -149,6 +149,38 @@ namespace ScrapeBuddy.Data
                 }
             }
         }
+        
+        /// <summary>
+        /// Get all undismissed Notifications
+        /// </summary>
+        static public int GetNotificationsUndismissed()
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                SELECT 
+                    COUNT(*)
+                FROM 
+                    notification
+                WHERE
+                    dismiss = 0";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            return (reader.GetInt32(0));
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
 
         
         /// <summary>

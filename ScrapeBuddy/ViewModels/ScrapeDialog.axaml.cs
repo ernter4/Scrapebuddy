@@ -3,6 +3,9 @@ using Avalonia.Interactivity;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System;
+using Avalonia;
+using Avalonia.Controls.Documents;
+using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -17,17 +20,49 @@ namespace ScrapeBuddy.ViewModels
         public ScrapeDialog()
         {
             InitializeComponent();
+            MainGrid = this.FindControl<Grid>("MainGrid");
+            OkayButton = this.FindControl<Button>("OkayButton");
+            Text = this.FindControl<TextBlock>("Text");
+
+            if (MainGrid == null || OkayButton == null | Text == null)
+            {
+                Console.WriteLine("Failed to find controls.");
+                return;
+            }
+            
             SettingsViewModel.ThemeChanged += SetTheme;
-            SetTheme(null, null);
+            
+            this.Loaded += (sender, e) =>
+            {
+                SetTheme(null, null);
+            };
         }
 
         /// <summary>
         /// Updates the displayed message in the loading dialog.
         /// </summary>
         /// <param name="message">The message to display.</param>
-        public void UpdateMessage(string message)
+        /// <param name="isSuccess">Indicates if the scraping was successful</param>
+        public void UpdateMessage(string message, bool isSuccess)
         {
-            MessageTextBlock.Text = message;
+            Text.Text = "";
+
+            Run symbolRun = new Run();
+            if (isSuccess)
+            {
+                symbolRun.Text = "✔️ "; 
+                symbolRun.Foreground = new SolidColorBrush(Colors.Green);  
+            }
+            else
+            {
+                symbolRun.Text = "❌ ";  
+                symbolRun.Foreground = new SolidColorBrush(Colors.Red);  
+            }
+            
+            Run messageRun = new Run(message);
+            
+            Text.Inlines.Add(symbolRun);  
+            Text.Inlines.Add(messageRun);  
         }
 
         /// <summary>
@@ -61,10 +96,18 @@ namespace ScrapeBuddy.ViewModels
             if (isDarkMode)
             {
                 Console.WriteLine("Now its Darkmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                OkayButton.Classes.Clear();
+                OkayButton.Classes.Add("btn_white");
+                Text.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
             }
             else
             {
                 Console.WriteLine("Now its Lightmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                OkayButton.Classes.Clear();
+                OkayButton.Classes.Add("btn_dark");
+                Text.Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 40));
             }
         }
     }

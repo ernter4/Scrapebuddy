@@ -9,6 +9,8 @@ using Avalonia;
 using Avalonia.Threading;  
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia.Media;
+using Avalonia.VisualTree;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -17,6 +19,8 @@ namespace ScrapeBuddy.ViewModels
         public event EventHandler CancelRequested;
         private Timer _notificationRefreshTimer;  
         private bool _isControlVisible;  
+        private SolidColorBrush notificationBackgroundColor;
+        private SolidColorBrush notificationTextColor;
 
         public NotificationViewModel()
         {
@@ -31,7 +35,7 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void StartNotificationRefreshTimer()
         {
-            _notificationRefreshTimer = new Timer(5000);  
+            _notificationRefreshTimer = new Timer(1000);  
             _notificationRefreshTimer.Elapsed += OnTimedRefresh;  
             _notificationRefreshTimer.AutoReset = true;  
             _notificationRefreshTimer.Start();  
@@ -72,7 +76,6 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         public void RefreshNotifications()
         {
-            Console.WriteLine("RefreshNotifications");
             NotificationList.Items.Clear(); 
             LoadNotifications(); 
         }
@@ -82,42 +85,61 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         public void LoadNotifications()
         {
+            NotificationList.Items.Clear(); 
             var notifications = DatabaseHandler.GetNotifications();
 
             foreach (var notification in notifications)
             {
+                // Create border and set properties
                 var border = new Border
                 {
-                    BorderThickness = new Avalonia.Thickness(2),
+                    BorderThickness = new Avalonia.Thickness(4),
                     CornerRadius = new Avalonia.CornerRadius(10),
                     Margin = new Avalonia.Thickness(5),
                     Padding = new Avalonia.Thickness(10),
-                    Background = Avalonia.Media.Brushes.LightGray
+                    Background = notificationBackgroundColor // Use theme-specific background color
                 };
 
+                // Apply a border color if Dismiss is false
+                if (!notification.dismiss)
+                {
+                    border.BorderBrush = new SolidColorBrush(Color.Parse("#a7dee4"));
+                    border.Margin = new Avalonia.Thickness(15);
+                }
+                else
+                {
+                    border.BorderBrush = Avalonia.Media.Brushes.Transparent;
+                    border.Margin = new Avalonia.Thickness(25);
+                }
+
+                // Create grid for layout
                 var grid = new Grid();
                 grid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
                 grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
 
+                // Create stack panel for title and notification text
                 var stackPanel = new StackPanel { Orientation = Orientation.Vertical };
 
                 var titleBlock = new TextBlock
                 {
                     Text = notification.title,
                     FontWeight = Avalonia.Media.FontWeight.Bold,
-                    FontSize = 16
+                    FontSize = 16,
+                    Foreground = notificationTextColor // Use theme-specific text color
                 };
 
                 var notificationBlock = new TextBlock
                 {
                     Text = notification.notification,
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                    MaxWidth = 500
+                    MaxWidth = 500,
+                    Foreground = notificationTextColor // Use theme-specific text color
                 };
 
                 stackPanel.Children.Add(titleBlock);
                 stackPanel.Children.Add(notificationBlock);
 
+                // Create delete button
                 var deleteButton = new Button
                 {
                     Content = "✖",
@@ -130,15 +152,19 @@ namespace ScrapeBuddy.ViewModels
                 };
                 deleteButton.Click += OnDeleteNotification;
 
+                // Add elements to grid
                 grid.Children.Add(stackPanel);
                 grid.Children.Add(deleteButton);
                 Grid.SetColumn(deleteButton, 1);
 
+                // Set grid as the child of the border
                 border.Child = grid;
 
+                // Add border to the notification list
                 NotificationList.Items.Add(border);
             }
         }
+
 
         /// <summary>
         /// Dismisses all notifications from the database.
@@ -148,6 +174,7 @@ namespace ScrapeBuddy.ViewModels
         private void DismissAll(object sender, RoutedEventArgs args)
         {
             DatabaseHandler.DismissAllNotitifications(); 
+            LoadNotifications();
         }
 
         /// <summary>
@@ -175,6 +202,25 @@ namespace ScrapeBuddy.ViewModels
             if (sender is Button button && button.Tag is int id)
             {
                 DeleteNotification(id);
+            }
+        }
+        
+        // <summary>
+        /// Handles the click event for the "Delete All" action. 
+        /// This method removes all notifications from the database and clears them from the user interface.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the control that triggered the event.</param>
+        /// <param name="e">Provides data for the event, such as event-specific information.</param>
+        private async void OnDeleteAll(object sender, RoutedEventArgs e)
+        {
+            var parentWindow = this.GetVisualRoot() as Window;
+            var confirmationDialog = new YesNoDialog();
+            confirmationDialog.UpdateConfirmationMessage("Do you really want to remove all Notifications?");
+            bool result = await confirmationDialog.ShowDialog<bool>(parentWindow);
+            if (result)
+            {
+                DatabaseHandler.DeleteAllNotitifications();
+                NotificationList.Items.Clear();
             }
         }
         
@@ -225,10 +271,30 @@ namespace ScrapeBuddy.ViewModels
             if (isDarkMode)
             {
                 Console.WriteLine("Now its Darkmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                Home.Classes.Clear();
+                Home.Classes.Add("btn_white");
+                Dismiss.Classes.Clear();
+                Dismiss.Classes.Add("btn_white");
+                DeleteAll.Classes.Clear();
+                DeleteAll.Classes.Add("btn_white");
+                Title.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
+                notificationBackgroundColor = new SolidColorBrush(Color.FromRgb(84, 98, 108)); // Dark gray
+                notificationTextColor = new SolidColorBrush(Color.FromRgb(239, 239, 239)); // Light gray
             }
             else
             {
                 Console.WriteLine("Now its Lightmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                Home.Classes.Clear();
+                Home.Classes.Add("btn_dark");
+                DeleteAll.Classes.Clear();
+                DeleteAll.Classes.Add("btn_dark");
+                Dismiss.Classes.Clear();
+                Dismiss.Classes.Add("btn_dark");
+                Title.Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+                notificationBackgroundColor = new SolidColorBrush(Color.FromRgb(216, 213, 213)); 
+                notificationTextColor = new SolidColorBrush(Color.FromRgb(40, 40, 40)); 
             }
         }
     }

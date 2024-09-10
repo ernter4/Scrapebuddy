@@ -9,25 +9,40 @@
     </UserControl.Resources>
     
     <UserControl.Styles>
-        <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
+        <StyleInclude Source="../AppStyles.axaml" />
     </UserControl.Styles>
-    
-    <Grid>
+
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" /> 
-            <RowDefinition Height="*" />  
+            <RowDefinition Height="Auto" />  <!-- Row 0: Buttons -->
+            <RowDefinition Height="Auto" />  <!-- Row 1: Title -->
+            <RowDefinition Height="Auto" />  <!-- Row 2: Remove All button -->
+            <RowDefinition Height="*" /> 
         </Grid.RowDefinitions>
-        
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Background="Aqua">
-            <Button Grid.Column="0" IsCancel="True" Click="OnCancelView" Height="35">
-                <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform" />
+    
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+            <Button Grid.Column="0" IsCancel="True" Classes="btn_dark" Click="OnCancelView" Height="35" x:Name="Home" Margin="5">
+                <Path Data="{StaticResource home_regular}" Stretch="Uniform" />
             </Button>
-            <Button Content="Dismiss All" Click="DismissAll" Grid.Column="2" Height="35" />
+            <Button Content="Delete All" Classes="btn_dark" x:Name="DeleteAll" Click="OnDeleteAll" Grid.Column="2" Height="35" Margin="5" />
         </Grid>
         
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="10">
+        <!-- Centered and larger TextBlock with more space above and below -->
+        <Grid Grid.Row="1">
+            <TextBlock 
+                x:Name="Title"
+                Text="Notifications" 
+                FontSize="30" 
+                FontWeight="Bold"
+                Foreground="White"
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                Margin="0,0,0,10"/>  <!-- Adjust the top and bottom margin as needed -->
+        </Grid>
+        <Button Grid.Row="2" Content="Dismiss All" Classes="btn_dark" x:Name="Dismiss" Click="DismissAll" Height="30" HorizontalAlignment="Center" />
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="20">
             <ItemsControl x:Name="NotificationList">
-                
+                <!-- Notifications items will go here -->
             </ItemsControl>
         </ScrollViewer>
     </Grid>

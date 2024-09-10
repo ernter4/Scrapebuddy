@@ -128,7 +128,7 @@ public partial class AddWebsite : UserControl
         {
             loadingDialog.Show();
             IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
-            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}");
+            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}" , true);
             Scraping = true;
             Content = element.Text;
             SaveBtn.IsEnabled = true;
@@ -139,7 +139,7 @@ public partial class AddWebsite : UserControl
             DatabaseHandler notification = new DatabaseHandler($"Scraping for {WebsiteName} failed: ", ex.Message);
             notification.CreateNotification();
 
-            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}");
+            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}", false);
             SaveBtn.IsEnabled = false;
             ToolTip.SetTip(SaveBtn, "Scrape to save your inputs");
         }

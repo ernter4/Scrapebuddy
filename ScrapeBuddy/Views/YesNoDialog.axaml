@@ -1,19 +1,20 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ScrapeBuddy.ViewModels.YesNoDialog"
-        Title="Reset Passphrase"
         Width="300"
         Height="150"
         Icon="avares://ScrapeBuddy/Assets/logo.ico">
     <Window.Styles>
         <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
     </Window.Styles>
-    <StackPanel Margin="10">
-        <TextBlock Text="Are you sure you want to reset your password? This will delete all your scraping data and cannot be undone."
-                   TextWrapping="Wrap" Margin="0,0,0,50"  x:Name="ConfirmationMessageTextBlock" />
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="YesButton" Content="Yes" Width="70" Background="Green" Margin="0,0,10,0"/>
-            <Button x:Name="NoButton" Content="No" Background="Red" Width="70"/>
+    <Grid x:Name="MainGrid">
+        <StackPanel Margin="10">
+            <TextBlock Text=""
+                       TextWrapping="Wrap" Margin="0,0,0,50"  x:Name="ConfirmationMessageTextBlock" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="YesButton" Content="Yes" Width="70" Background="Green" Foreground="White" Classes="btn_white" Margin="0,0,30,0"/>
+                <Button x:Name="NoButton" Content="No" Background="Red"  Foreground="White" Classes="btn_white" Width="70"/>
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </Grid>    
 </Window>

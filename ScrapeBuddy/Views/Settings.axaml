@@ -27,7 +27,7 @@
         <StackPanel Grid.Row="1" Margin="10">
         
             <!-- Toggle for Dark/White Mode -->
-            <ToggleSwitch x:Name="DarkModeToggleSwitch" Content="Dark/White Mode" IsChecked="False" Click="OnToggleDarkWhiteMode" Margin="0,10" />
+            <ToggleSwitch x:Name="DarkModeToggleSwitch" Content="Dark Mode" IsChecked="False" Click="OnToggleDarkWhiteMode" Margin="0,10" />
         
             <!-- Toggle for Email Notifications -->
             <ToggleSwitch x:Name="EmailNotificationsToggleSwitch" Content="Enable Email Notifications" IsChecked="False" Click="OnToggleEmailNotifications" Margin="0,10" />

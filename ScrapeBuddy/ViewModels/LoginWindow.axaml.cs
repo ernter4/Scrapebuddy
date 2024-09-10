@@ -90,13 +90,16 @@ namespace ScrapeBuddy.ViewModels
         public async void ForgotPasswordClick(object? sender, RoutedEventArgs e)
         {
             var confirmationDialog = new YesNoDialog();
+            confirmationDialog.UpdateConfirmationMessage("Are you sure you want to reset your password? This will delete all your scraping data and cannot be undone.");
             bool result = await confirmationDialog.ShowDialog<bool>(this);
 
             if (result)
             {
+                SettingsManager _settingsManager = new SettingsManager();
                 DatabaseHandler.DeleteAllTables();
                 Hashing.DeleteHash();
-
+                _settingsManager.DeleteSettings();
+                _settingsManager.WriteDefaultValues();
                 var initialWindow = new CreatePassphraseWindow(false, null, null);
                 initialWindow.Show();
         

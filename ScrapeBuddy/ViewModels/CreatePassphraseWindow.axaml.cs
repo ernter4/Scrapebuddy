@@ -55,13 +55,16 @@ namespace ScrapeBuddy.ViewModels
                 var errors = PasswordValidator.ValidatePassword(password);
                 if (errors.All(passwordValid => passwordValid))
                 {
+                    if (reset)
+                    {
+                        Hashing.DeleteHash();
+                    }
                     Hashing hash = new Hashing(password);
                     await hash.GenerateHashAsync();
                     hash.StoreMasterKey();
                     
                     if (reset)
                     {
-                        Hashing.DeleteHash();
                         DatabaseHandler _databaseHandler = new DatabaseHandler();
                         _databaseHandler.ReEncryptUserData(users);
                         if (emailAndName != null)
@@ -92,6 +95,9 @@ namespace ScrapeBuddy.ViewModels
                     mainWindow.Show();
                     Close();
                     splashScreen.Close();
+                    var installChromeDialog = new InstallChromeDialog();
+                    await installChromeDialog.ShowDialog<bool>(mainWindow);
+                    
                 }
             }
             else

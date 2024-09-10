@@ -3,6 +3,8 @@ using Avalonia.Markup.Xaml;
 using System;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia.Media;
+using Avalonia;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -19,8 +21,23 @@ namespace ScrapeBuddy.ViewModels
             InitializeComponent();
             this.FindControl<Button>("YesButton").Click += YesButton_Click;
             this.FindControl<Button>("NoButton").Click += NoButton_Click;
+            
+            MainGrid = this.FindControl<Grid>("MainGrid");
+            YesButton= this.FindControl<Button>("YesButton");
+            NoButton= this.FindControl<Button>("NoButton");
+            ConfirmationMessageTextBlock = this.FindControl<TextBlock>("ConfirmationMessageTextBlock");
+
+            if (MainGrid == null || YesButton == null || NoButton == null || ConfirmationMessageTextBlock == null)
+            {
+                Console.WriteLine("Failed to find controls.");
+                return;
+            }
             SettingsViewModel.ThemeChanged += SetTheme;
-            SetTheme(null, null);
+            
+            this.Loaded += (sender, e) =>
+            {
+                SetTheme(null, null);
+            };
         }
 
         /// <summary>
@@ -72,11 +89,23 @@ namespace ScrapeBuddy.ViewModels
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
             {
-                Console.WriteLine("Now its Darkmode at YESNO");
+                Console.WriteLine("Now its Darkmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                YesButton.Classes.Clear();
+                YesButton.Classes.Add("btn_white"); 
+                NoButton.Classes.Clear();
+                NoButton.Classes.Add("btn_white"); 
+                ConfirmationMessageTextBlock.Foreground = new SolidColorBrush(Colors.White);
             }
             else
             {
-                Console.WriteLine("Now its Lightmode at YESNO");
+                Console.WriteLine("Now its Lightmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                YesButton.Classes.Clear();
+                YesButton.Classes.Add("btn_dark"); 
+                NoButton.Classes.Clear();
+                NoButton.Classes.Add("btn_dark"); 
+                ConfirmationMessageTextBlock.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
     }

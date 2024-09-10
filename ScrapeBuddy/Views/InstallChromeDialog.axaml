@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ScrapeBuddy.ViewModels.InstallChromeDialog"
+        Title="Install Chrome"
+        Width="350"
+        Height="250"
+        Icon="avares://ScrapeBuddy/Assets/logo.ico">
+    <Window.Styles>
+        <StyleInclude Source="../AppStyles.axaml"/>
+    </Window.Styles>
+    <Grid x:Name="MainGrid">
+        <StackPanel Margin="10">
+            
+            <!-- Message Text -->
+            <TextBlock x:Name="Text" Text="To use ScrapeBuddy, please install Google Chrome as it is essential for the application to function properly."
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,10"
+                       HorizontalAlignment="Center"/>
+            
+            <!-- Chrome Logo -->
+            <Image Source="avares://ScrapeBuddy/Assets/chrome.ico" 
+                   Width="100" 
+                   Height="100" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,30"/>
+            
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="OkayButton" Content="OK" Width="70" Classes="btn_dark" Margin="0,0,10,0"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>    
+</Window>
