@@ -11,6 +11,8 @@ using ScrapeBuddy.Data;
 using ScrapeBuddy.ViewModels;
 using Splat;
 using MissingFieldException = System.MissingFieldException;
+using System.Threading;
+
 
 namespace ScrapeBuddy.Logic
 {
@@ -168,13 +170,12 @@ namespace ScrapeBuddy.Logic
 
                 if (login)
                 {
-
                     Login(username, password);
-
-
                 }
 
+                Thread.Sleep(500);
                 Click(elementstoclick);
+                Thread.Sleep(500);
 
                 IWebElement element;
                 if (xpath is null)
@@ -213,7 +214,7 @@ namespace ScrapeBuddy.Logic
         {
             List<IWebElement> transfer;
             List<IWebElement>? usernamefields = [];
-            List<string> usernamefieldnames = ["usrname", "username", "email", "emailadress"];
+            List<string> usernamefieldnames = ["usrname", "username", "email", "emailadress","_existingUserData.EMail"];
             
             foreach (var username in usernamefieldnames)
             {
@@ -239,8 +240,8 @@ namespace ScrapeBuddy.Logic
         /// <returns>List of passwordfields in wich the password can be inserted</returns>
         private List<IWebElement> Getpasswordfields()
         {
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
-             List<string> passwordfieldnames = ["pssword", "password", "passwrd","pass"];
+             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
+             List<string> passwordfieldnames = ["pssword", "password", "passwrd","pass","_existingUserData.Password"];
              ReadOnlyCollection<IWebElement> transfer;   
              List<IWebElement> passwordfields = [];
              foreach (var name in passwordfieldnames)
