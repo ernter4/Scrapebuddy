@@ -10,6 +10,8 @@ using ScrapeBuddy.Logic;
 using ScrapeBuddy.Exceptions;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia;
+using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -117,12 +119,26 @@ namespace ScrapeBuddy.ViewModels
             JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
-            {
+            {   
+
                 Console.WriteLine("Now its Darkmode");
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                LoginButton.Classes.Remove("btn_dark");
+                LoginButton.Classes.Add("btn_white");
+                Welcome.Foreground = new SolidColorBrush(Color.Parse("#81D2C7"));
+                Forgot.Foreground = new SolidColorBrush(Color.Parse("#81D2C7"));
+                Enter.Foreground = new SolidColorBrush(Color.Parse("#81D2C7"));
             }
             else
             {
                 Console.WriteLine("Now its Lightmode");
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                LoginButton.Classes.Remove("btn_white");
+                LoginButton.Classes.Add("btn_dark");
+                Welcome.Foreground = new SolidColorBrush(Color.Parse("#416788"));
+                Forgot.Foreground = new SolidColorBrush(Color.Parse("#416788"));
+                Enter.Foreground = new SolidColorBrush(Color.Parse("#416788"));
+
             }
         }
     }

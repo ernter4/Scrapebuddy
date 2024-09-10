@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia;
+using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -75,12 +77,20 @@ namespace ScrapeBuddy.ViewModels
             JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
-            {
+            { 
                 Console.WriteLine("Now its Darkmode");
+                Console.WriteLine("Now its Darkmode");
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                Block.Foreground = new SolidColorBrush(Color.Parse("#81D2C7"));
+                
             }
             else
             {
-                Console.WriteLine("Now its Lightmode");
+                Console.WriteLine("Now its Lightmode"); 
+                Console.WriteLine("Now its Lightmode"); 
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"]; 
+                Block.Foreground = new SolidColorBrush(Color.Parse("#416788"));
+                
             }
         }
     }

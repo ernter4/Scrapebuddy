@@ -2,23 +2,40 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ScrapeBuddy.ViewModels.LoginWindow"
         Title="Login"
-        Width="500" Height="500"
+        Width="400" Height="400"
         Icon="avares://ScrapeBuddy/Assets/logo.ico">
-    <Window.Styles>
+  <Window.Styles>
         <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
     </Window.Styles>
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"> 
-        <TextBlock Text="Enter Password:" Margin="0,0,0,10" />
-        <TextBox x:Name="PasswordBox" Classes="revealPasswordButton" PasswordChar="*" Watermark="Enter your password" Width="200" TextChanged="PasswordBox_TextChanged"/>
-        <Button Content="Login" Width="200" Margin="0,10,0,0" Click="OnLoginClick" HorizontalAlignment="Center"/>
-        <StackPanel Width="300" HorizontalAlignment="Center"><TextBlock x:Name="ErrorTextBlock"  FontSize="12" Foreground="Red" Margin="0,10,0,0" IsVisible="False" HorizontalAlignment="Center"/></StackPanel>
-        <Button Click="ForgotPasswordClick" Background="Transparent" BorderThickness="0" Margin="0,40,0,0" HorizontalAlignment="Right">
-            <Button.Styles>
-                <Style Selector="Button:pointerover /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Azure"></Setter>
-                </Style>
-            </Button.Styles> 
-            <TextBlock Text="Forgot Passphrase" Foreground="DodgerBlue"  FontSize="12"/>
-        </Button> 
-    </StackPanel>
+
+    <Grid>
+
+        <!-- Main Content -->
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
+                <!-- Header with Icon -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="5">
+                    <TextBlock Name="Welcome" Text="Welcome Back!" FontSize="26" FontWeight="Bold" Foreground="#416788" HorizontalAlignment="Center"/>
+                    <Image Source="/Assets/logo.ico" Width="100" Height="100" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                </StackPanel>
+
+                <!-- Password Input -->
+                <TextBlock Name="Enter" Text="Enter your Password:" Foreground="#416788" HorizontalAlignment="Center"/>
+                <Border Background="#E0E0E2" CornerRadius="8">
+                    <TextBox x:Name="PasswordBox" Classes="revealPasswordButton" PasswordChar="•" Watermark="Enter your password" Width="250" VerticalContentAlignment="Center" Background="#E0E0E2" Foreground="#416788" TextChanged="PasswordBox_TextChanged" HorizontalAlignment="Center"/>
+                </Border>
+
+                <!-- Login Button -->
+                <Button Name="LoginButton" Content="Login" Width="150" Height="30" Click="OnLoginClick" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+
+                <!-- Error Text -->
+                <TextBlock x:Name="ErrorTextBlock" FontSize="12" Foreground="Red" Margin="0,5,0,0" IsVisible="False" HorizontalAlignment="Center"/>
+
+                <!-- Forgot Password -->
+                <Button Click="ForgotPasswordClick" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right">
+                    <TextBlock Name="Forgot" Text="Forgot Passphrase?" Foreground="#416788" FontSize="12" TextDecorations="Underline"/>
+                </Button>
+            </StackPanel>
+
+    </Grid>
 </Window>

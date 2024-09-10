@@ -5,43 +5,22 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ScrapeBuddy.ViewModels.LoadingWindow"
         Title="ScrapeBuddy"
-        Width="500" Height="500"
+        Width="400" Height="400"
         Icon="avares://ScrapeBuddy/Assets/logo.ico"
         >
     <Window.Styles>
         <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
     </Window.Styles>
-    <Panel Background="#1e1e1e">
+    <Grid>
 
+        <!-- Main Content -->
 
-        <StackPanel Spacing="20"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-
-
-            <Image Source="/Assets/logo.ico"
-                   Width="150"
-                   Height="150"
-                   RenderOptions.BitmapInterpolationMode="HighQuality"/>
-
-            <TextBlock Text="ScrapeBuddy"
-                       FontSize="48"
-                       Foreground="White" />
-
-            <ProgressBar Name="ProgressBar1"
-                         MaxWidth="200"
-                         Height="10"
-                         BorderBrush="Violet" BorderThickness="1"
-                         Margin="0 10 0 0"/>
-
-            <TextBlock Text="Loading..."
-                       Name="LoadingText"
-                       HorizontalAlignment="Center"
-                       FontSize="20"
-                       Foreground="White"/>
-
+        <StackPanel Spacing="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image Source="/Assets/logo.ico" Width="100" Height="100" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            <TextBlock Name="Block" Text="ScrapeBuddy" FontSize="38"  FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <ProgressBar Name="ProgressBar1" MaxWidth="250" Height="20" BorderBrush="#416788" Foreground="#81D2C7" BorderThickness="2" Margin="0 10 0 0"/>
+            <TextBlock Text="Loading..." Name="LoadingText" HorizontalAlignment="Center" FontSize="20" Foreground="#B5BAD0"/>
         </StackPanel>
 
-    </Panel>
- 
+    </Grid>
 </Window>

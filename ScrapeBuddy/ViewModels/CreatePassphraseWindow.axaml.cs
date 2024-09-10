@@ -9,6 +9,8 @@ using ScrapeBuddy.Logic;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.ViewModels;
 using System.IO;
+using Avalonia;
+using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -157,10 +159,19 @@ namespace ScrapeBuddy.ViewModels
             if (isDarkMode)
             {
                 Console.WriteLine("Now its Darkmode");
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                EnterPW.Foreground = new SolidColorBrush(Color.Parse("#81D2C7"));
+                CreateNew.Classes.Remove("btn_dark");
+                CreateNew.Classes.Add("btn_white");
+
             }
             else
             {
                 Console.WriteLine("Now its Lightmode");
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                EnterPW.Foreground = new SolidColorBrush(Color.Parse("#416788"));
+                CreateNew.Classes.Remove("btn_white");
+                CreateNew.Classes.Add("btn_dark");
             }
         }
     }
