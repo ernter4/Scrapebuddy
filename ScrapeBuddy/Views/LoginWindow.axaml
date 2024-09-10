@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ScrapeBuddy.ViewModels.LoginWindow"
         Title="Login"
-        Width="500" Height="500">
+        Width="500" Height="500"
+        Icon="avares://ScrapeBuddy/Assets/logo.ico">
     <Window.Styles>
         <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
     </Window.Styles>

@@ -213,10 +213,10 @@ namespace ScrapeBuddy.ViewModels
             var item = sender as MenuItem;
             var websiteInfo = item.Tag as WebsiteInfo;
             int selectedId = websiteInfo.Id;
-            Console.WriteLine($"Current Id: {selectedId}");
             
-            var confDialog = new DeleteWebsite(websiteInfo.WebsiteName);
-            bool result = await confDialog.ShowDialog<bool>(this);
+            var confirmationDialog = new YesNoDialog();
+            confirmationDialog.UpdateConfirmationMessage($"Do you really want to delete {websiteInfo.WebsiteName}?");
+            bool result = await confirmationDialog.ShowDialog<bool>(this);
 
             if (result)
             {

@@ -6,6 +6,7 @@
         x:Class="ScrapeBuddy.ViewModels.LoadingWindow"
         Title="ScrapeBuddy"
         Width="500" Height="500"
+        Icon="avares://ScrapeBuddy/Assets/logo.ico"
         >
     <Window.Styles>
         <StyleInclude Source="../AppStyles.axaml"></StyleInclude>
