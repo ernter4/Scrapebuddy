@@ -22,7 +22,7 @@
     <Grid>
         <!-- Linke Spalte -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/> <!-- Breite der linken Spalte -->
+            <ColumnDefinition Width="400"/> <!-- Breite der linken Spalte -->
             <ColumnDefinition Width="*"/> <!-- Hauptinhalt -->  
         </Grid.ColumnDefinitions>
         
@@ -103,7 +103,7 @@
             </ScrollViewer>
         </DockPanel>
         
-        <Grid Grid.Column="1" x:Name="MainContent">
+        <Grid Grid.Column="1" x:Name="MainContent" >
             <!-- Dynamically load content in here -->
         </Grid>
         

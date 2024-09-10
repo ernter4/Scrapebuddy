@@ -182,17 +182,17 @@ public partial class AddWebsite : UserControl
         NeedsCredentials = !NeedsCredentials;
         if (NeedsCredentials)
         {
-            CredentialsBtn.Content = "Add Credentials"; 
+            CredentialsBtn.Content = "Remove Credentials";
         }
         else
         {
-            CredentialsBtn.Content = "Remove Credentials";
+            CredentialsBtn.Content = "Add Credentials";
         }
         Password = null;
         Username = null;
         Console.WriteLine($"{NeedsCredentials}");
-        UsernameTextBox.IsVisible = NeedsCredentials;
-        PasswordTextBox.IsVisible = NeedsCredentials;
+        UsernameBoxContainer.IsVisible = NeedsCredentials;
+        PasswordBoxContainer.IsVisible = NeedsCredentials;
         UsernameTextBox.Text = null;
         PasswordTextBox.Text = null;
     }
@@ -291,30 +291,39 @@ public partial class AddWebsite : UserControl
     private void OnClicksButtonClick(object sender, RoutedEventArgs e)
     {
         clickCount++;
-        var dockPanel = new DockPanel
+        if (clickCount <= 4)
         {
-            Margin = new Thickness(0, 5, 0, 0)
-        };
+            var dockPanel = new DockPanel
+            {
+                Margin = new Thickness(0, 5, 0, 0)
+            };
         
-        var textBox = new TextBox
-        {
-            Name = $"ClicksTextBox{clickCount}",
-            Watermark = $"XPath Click",
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
-        };
-        dockPanel.Children.Add(textBox);
-        DockPanel.SetDock(textBox, Dock.Left);
-        var deleteButton = new Button
-        {
-            Name = $"DeleteButton{clickCount}", 
-            Content = "X",
-            Margin = new Thickness(5, 0, 0, 0)
-        };
-        deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
-        dockPanel.Children.Add(deleteButton);
-        DockPanel.SetDock(deleteButton, Dock.Right);
+            var textBox = new TextBox
+            {
+                Name = $"ClicksTextBox{clickCount}",
+                Watermark = $"XPath Click",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                Margin = new Thickness(5, 0, 0, 0)
+            };
+            dockPanel.Children.Add(textBox);
+            DockPanel.SetDock(textBox, Dock.Left);
+            var deleteButton = new Button
+            {
+                Name = $"DeleteButton{clickCount}", 
+                Content = "X",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                Margin = new Thickness(2, 0, 0, 0)
+            };
+            deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+            dockPanel.Children.Add(deleteButton);
+            DockPanel.SetDock(deleteButton, Dock.Right);
         
-        ClicksStackPanel.Children.Add(dockPanel);
+            ClicksStackPanel.Children.Add(dockPanel);
+        }
+        else
+        {
+            Console.WriteLine("More than 4 Clicks cannot be added");
+        }
     }
     
     /// <summary>
@@ -369,13 +378,36 @@ public partial class AddWebsite : UserControl
         bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
         if (isDarkMode)
         {
-            Console.WriteLine("Now its Darkmode");
             MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+            ScrapeBtn.Classes.Remove("btn_white");
+            ScrapeBtn.Classes.Add("btn_dark");
+            SaveBtn.Classes.Remove("btn_white");
+            SaveBtn.Classes.Add("btn_dark");
+            HomeBtn.Classes.Remove("btn_white");
+            HomeBtn.Classes.Add("btn_dark");
+            ClearBtn.Classes.Remove("btn_white");
+            ClearBtn.Classes.Add("btn_dark");
+            ClicksButton.Classes.Remove("btn_white");
+            ClicksButton.Classes.Add("btn_dark");
+            CredentialsBtn.Classes.Remove("btn_white");
+            CredentialsBtn.Classes.Add("btn_dark");
+
         }
         else
         {
-            Console.WriteLine("Now its Lightmode");
             MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+            ScrapeBtn.Classes.Remove("btn_dark");
+            ScrapeBtn.Classes.Add("btn_white");
+            SaveBtn.Classes.Remove("btn_dark");
+            SaveBtn.Classes.Add("btn_white");
+            HomeBtn.Classes.Remove("btn_dark");
+            HomeBtn.Classes.Add("btn_white");
+            ClearBtn.Classes.Remove("btn_dark");
+            ClearBtn.Classes.Add("btn_white");
+            ClicksButton.Classes.Remove("btn_dark");
+            ClicksButton.Classes.Add("btn_white");
+            CredentialsBtn.Classes.Remove("btn_dark");
+            CredentialsBtn.Classes.Add("btn_white");
         }
     }
     

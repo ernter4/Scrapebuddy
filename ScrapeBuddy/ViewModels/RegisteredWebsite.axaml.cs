@@ -148,17 +148,13 @@ namespace ScrapeBuddy.ViewModels
             
             if (NeedsCredentials)
             {
-                CredentialsHeader.IsVisible = true;
-                UsernameTextBox.IsVisible = true;
-                PasswordTextBox.IsVisible = true;
+                CredentialsDockPanel.IsVisible = true;
                 UsernameTextBox.Text = _username;
                 PasswordTextBox.Text = _password;
             }
             else
             {
-                CredentialsHeader.IsVisible = false;
-                UsernameTextBox.IsVisible = false;
-                PasswordTextBox.IsVisible = false;
+                CredentialsDockPanel.IsVisible = false;
             }
         }
         
@@ -232,26 +228,21 @@ namespace ScrapeBuddy.ViewModels
         /// Toggles the visibility of the credentials fields in edit mode.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The event data.</param>
+        /// <param name="args">The event data.</param>CredentialsBtn
         private void ShowCredentialsEditView(object? sender, RoutedEventArgs routedEventArgs)
         {
             if (NeedsCredentials)
             {
-                
-                UsernameTextBox.IsVisible = false;
-                PasswordTextBox.IsVisible = false;
+                CredentialsDockPanel.IsVisible = true;
+                CredentialsBtn.Content = "Remove Credentials";
                 _username = null;
                 _password = null;
-                
-                CredentialsBtn.Content = "Add Credentials";
                 NeedsCredentials = false;
-                
             }
             else
             {
-                UsernameTextBox.IsVisible = true;
-                PasswordTextBox.IsVisible = true;
-                CredentialsBtn.Content = "Remove Credentials";
+                CredentialsDockPanel.IsVisible = false;
+                CredentialsBtn.Content = "Add Credentials";
                 NeedsCredentials = true;
 
             }
@@ -330,14 +321,11 @@ namespace ScrapeBuddy.ViewModels
             ContentTextBox.IsVisible = !IsEditable;
             if (NeedsCredentials)
             {
-                PasswordTextBox.IsEnabled = IsEditable;
-                UsernameTextBox.IsEnabled = IsEditable;
-                CredentialsHeader.IsVisible = !IsEditable;
+                CredentialsDockPanel.IsVisible = true;
             }
             else
             {
-                PasswordTextBox.IsVisible = false;
-                UsernameTextBox.IsVisible = false;
+                CredentialsDockPanel.IsVisible = false;
             }
 
             if (!IsEditable)
@@ -392,31 +380,39 @@ namespace ScrapeBuddy.ViewModels
         private void OnClicksButtonClick(object sender, RoutedEventArgs e)
         {
             clickCount++;
-            
-            var dockPanel = new DockPanel
+            if (clickCount <= 4)
             {
-                Margin = new Thickness(0, 5, 0, 0)
-            };
-            var textBox = new TextBox
+                var dockPanel = new DockPanel
+                {
+                    Margin = new Thickness(0, 5, 0, 0)
+                };
+        
+                var textBox = new TextBox
+                {
+                    Name = $"ClicksTextBox{clickCount}",
+                    Watermark = $"XPath Click",
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    Margin = new Thickness(5, 0, 0, 0)
+                };
+                dockPanel.Children.Add(textBox);
+                DockPanel.SetDock(textBox, Dock.Left);
+                var deleteButton = new Button
+                {
+                    Name = $"DeleteButton{clickCount}", 
+                    Content = "X",
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    Margin = new Thickness(2, 0, 0, 0)
+                };
+                deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+                dockPanel.Children.Add(deleteButton);
+                DockPanel.SetDock(deleteButton, Dock.Right);
+        
+                ClicksStackPanel.Children.Add(dockPanel);
+            }
+            else
             {
-                Name = $"ClicksTextBox{clickCount}",
-                Watermark = $"XPath Click {clickCount}",
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
-            };
-            
-            dockPanel.Children.Add(textBox);
-            DockPanel.SetDock(textBox, Dock.Left);
-
-            var deleteButton = new Button
-            {
-                Name = $"DeleteButton{clickCount}",
-                Content = "X",
-                Margin = new Thickness(5, 0, 0, 0)
-            };
-            deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
-            dockPanel.Children.Add(deleteButton);
-            DockPanel.SetDock(deleteButton, Dock.Right);
-            ClicksStackPanel.Children.Add(dockPanel);
+                Console.WriteLine("More than 4 Clicks cannot be added");
+            }
         }
         
         /// <summary>
@@ -496,42 +492,39 @@ namespace ScrapeBuddy.ViewModels
                 foreach (var click in ClicksList)
                 {
                     clickCount++;
-
-                    // Create a new DockPanel to hold the TextBox and Button
-                    var dockPanel = new DockPanel
+                    if (clickCount <= 4)
                     {
-                        Margin = new Thickness(0, 5, 0, 0)
-                    };
-
-                    // Create the TextBox
-                    var textBox = new TextBox
+                        var dockPanel = new DockPanel
+                        {
+                            Margin = new Thickness(0, 5, 0, 0)
+                        };
+        
+                        var textBox = new TextBox
+                        {
+                            Name = $"ClicksTextBox{clickCount}",
+                            Watermark = $"XPath Click",
+                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                            Margin = new Thickness(5, 0, 0, 0)
+                        };
+                        dockPanel.Children.Add(textBox);
+                        DockPanel.SetDock(textBox, Dock.Left);
+                        var deleteButton = new Button
+                        {
+                            Name = $"DeleteButton{clickCount}", 
+                            Content = "X",
+                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                            Margin = new Thickness(2, 0, 0, 0)
+                        };
+                        deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
+                        dockPanel.Children.Add(deleteButton);
+                        DockPanel.SetDock(deleteButton, Dock.Right);
+        
+                        ClicksStackPanel.Children.Add(dockPanel);
+                    }
+                    else
                     {
-                        Name = $"ClicksTextBox{clickCount}",
-                        Text = click,
-                        Watermark = $"XPath",
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
-                    };
-
-                    // Add TextBox to the DockPanel
-                    dockPanel.Children.Add(textBox);
-                    DockPanel.SetDock(textBox, Dock.Left);
-
-                    var deleteButton = new Button
-                    {
-                        Name = $"DeleteButton{clickCount}", // Set a unique name
-                        Content = "X",
-                        Margin = new Thickness(5, 0, 0, 0)
-                    };
-
-                    // Handle delete button click event
-                    deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
-
-                    // Add Button to the DockPanel
-                    dockPanel.Children.Add(deleteButton);
-                    DockPanel.SetDock(deleteButton, Dock.Right);
-
-                    // Add the DockPanel to ClicksStackPanel
-                    ClicksStackPanel.Children.Add(dockPanel);
+                        Console.WriteLine("More than 4 Clicks cannot be added");
+                    }
                 }
             }
         }
@@ -558,25 +551,6 @@ namespace ScrapeBuddy.ViewModels
         }
         
         /// <summary>
-        /// Determines whether user inputs can be written to the database.
-        /// </summary>
-        /// <param name="parameter">An optional parameter that may influence the ability to write to the database.</param>
-        /// <param name="reporter">An object used to report why the action cannot be executed.</param>
-        /// <returns>
-        /// <c>true</c> if user inputs can be written to the database; otherwise, <c>false</c>.
-        /// </returns>
-        internal bool CanWriteUserInputsToDatabase(object? parameter, IReportReasonCantExecute reporter)
-        {
-            if (!SaveBtn.IsEnabled)
-            {
-                reporter.ReasonCantExecute = "You can't do the thing yet.";
-                return false;
-            }
-
-            return true;
-        }
-        
-        /// <summary>
         /// Sets the application theme based on the "DarkMode" setting.
         /// </summary>
         /// <param name="sender">The event sender (can be null).</param>
@@ -587,11 +561,36 @@ namespace ScrapeBuddy.ViewModels
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
             {
-                Console.WriteLine("Now its Darkmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                ScrapeBtn.Classes.Remove("btn_white");
+                ScrapeBtn.Classes.Add("btn_dark");
+                SaveBtn.Classes.Remove("btn_white");
+                SaveBtn.Classes.Add("btn_dark");
+                HomeBtn.Classes.Remove("btn_white");
+                HomeBtn.Classes.Add("btn_dark");
+                EditBtn.Classes.Remove("btn_white");
+                EditBtn.Classes.Add("btn_dark");
+                ClicksButton.Classes.Remove("btn_white");
+                ClicksButton.Classes.Add("btn_dark");
+                CredentialsBtn.Classes.Remove("btn_white");
+                CredentialsBtn.Classes.Add("btn_dark");
+
             }
             else
             {
-                Console.WriteLine("Now its Lightmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                ScrapeBtn.Classes.Remove("btn_dark");
+                ScrapeBtn.Classes.Add("btn_white");
+                SaveBtn.Classes.Remove("btn_dark");
+                SaveBtn.Classes.Add("btn_white");
+                HomeBtn.Classes.Remove("btn_dark");
+                HomeBtn.Classes.Add("btn_white");
+                EditBtn.Classes.Remove("btn_dark");
+                EditBtn.Classes.Add("btn_white");
+                ClicksButton.Classes.Remove("btn_dark");
+                ClicksButton.Classes.Add("btn_white");
+                CredentialsBtn.Classes.Remove("btn_dark");
+                CredentialsBtn.Classes.Add("btn_white");
             }
         }
     }

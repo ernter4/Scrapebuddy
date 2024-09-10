@@ -12,6 +12,7 @@
     </UserControl.Resources>
     
     <UserControl.Styles>
+        
         <Style Selector="Button.ToggleButton">
             <Setter Property="Background" Value="#f5f7fa"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -37,49 +38,70 @@
         </Style>
     </UserControl.Styles>
     
-    <Grid x:Name="MainGrid" RowDefinitions="Auto, Auto, Auto">
+    <Grid x:Name="MainGrid" RowDefinitions="Auto, *, Auto">
         <!-- cancel and info -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" >
-            <Button Grid.Column="0" Classes="btn_dark" IsCancel="True" Click="OnCancelView" Height="35">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+            <Button x:Name="HomeBtn" Grid.Column="0"  IsCancel="True" Click="OnCancelView" Height="35">
                 <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
-            <Button Grid.Column="2" Classes="btn_dark" Height="35" Click="ClearFields">
+            <Button x:Name="ClearBtn" Grid.Column="2"  Height="35" Click="ClearFields">
                 <Path Data="{StaticResource delete_regular}" Fill="Black" Stretch="Uniform"></Path>
             </Button>
         </Grid>
         
-        <!-- Website -->
+        <!-- Website --> 
         <Grid Grid.Row="1" RowDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,Auto,*" >
-            <TextBox Grid.Column="1" Grid.Row="1" Watermark="Website Name" x:Name="WebsiteNameTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,0"/>
-            <TextBox Grid.Column="1" Grid.Row="3" Watermark="Website Link" x:Name="WebsiteLinkTextBox" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,20,0,10"/>
-            <DockPanel Grid.Column="1" Grid.Row="4" Width="200">
-                <Button DockPanel.Dock="Top" x:Name="ClicksButton" Classes="btn_dark" Click="OnClicksButtonClick" Content="Add Click" Margin="0,15,0,0"/>
-                <StackPanel x:Name="ClicksStackPanel" DockPanel.Dock="Bottom" Margin="0,0,0,20" Orientation="Vertical">
+            <DockPanel Grid.Column="1" Grid.Row="1" Classes="WrapperDockpanel">
+                <TextBlock DockPanel.Dock="Top" >Website name</TextBlock>
+                <TextBox DockPanel.Dock="Top"  Watermark="Website name" x:Name="WebsiteNameTextBox" />    
+            </DockPanel>
+            <DockPanel Grid.Column="1" Grid.Row="3" Classes="WrapperDockpanel">
+                <TextBlock DockPanel.Dock="Top">Website Url</TextBlock>
+                <TextBox DockPanel.Dock="Top"  Watermark="Website Url" x:Name="WebsiteLinkTextBox"/>    
+            </DockPanel>
+            
+            <DockPanel Grid.Column="1" Grid.Row="4" Margin="0,10,0,0" Height="50">
+                <Button DockPanel.Dock="Left" x:Name="ClicksButton" Click="OnClicksButtonClick" Content="Add Click"  VerticalAlignment="Center" Margin="14,0,0,0"/>
+                <StackPanel x:Name="ClicksStackPanel" DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
                     <!-- Dynamic content will be added here -->
                 </StackPanel>
             </DockPanel>
-            <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,15,0,0">
-                <Button x:Name="IdButton" Content="ID" Click="OnIDClicked"
-                        Classes="ToggleButton LeftToggle" />
-                <Button x:Name="XPathButton" Content="XPath" Click="OnXPathClicked"
-                        Classes="ToggleButton RightToggle" />
-            </StackPanel>
-            <TextBox Grid.Column="1" Grid.Row="7" x:Name="PathToElementTextBox" Watermark="Id" Width="200" Height="20" VerticalContentAlignment="Center" Margin="0,5,0,0"/>
-            <DockPanel Grid.Column="1" Grid.Row="9" Width="200">
-                <Button DockPanel.Dock="Top" Classes="btn_dark" x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Add Credentials" Margin="0,15,0,10"/>
-                <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
-                    <TextBox Grid.Column="0" x:Name="UsernameTextBox" Watermark="Username" IsVisible="False"></TextBox>
-                    <TextBox Grid.Column="2" x:Name="PasswordTextBox" Watermark="Password" IsVisible="False" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
-                </Grid>
+            <DockPanel Grid.Column="1" Grid.Row="7">
+                <DockPanel DockPanel.Dock="Top" Classes="WrapperDockpanel" Margin="14,0,0,10">
+                    <Button x:Name="IdButton" Content="ID" Click="OnIDClicked"
+                            Classes="ToggleButton LeftToggle" />
+                    <Button x:Name="XPathButton" Content="XPath" Click="OnXPathClicked"
+                            Classes="ToggleButton RightToggle" />
+                </DockPanel>
+                
+                <DockPanel Classes="WrapperDockpanel">
+                    <TextBlock DockPanel.Dock="Top" >Element Path</TextBlock>
+                    <TextBox DockPanel.Dock="Top"  x:Name="PathToElementTextBox" Watermark="Id"/>
+                </DockPanel>    
             </DockPanel>
+            
+            <!-- credentials -->
+            <DockPanel Grid.Column="1" Grid.Row="9" >
+                <Button DockPanel.Dock="Top"  x:Name="CredentialsBtn" Click="ShowCredentialsView" Content="Add Credentials" Margin="14,0,0,5"/>
+                
+                <DockPanel  DockPanel.Dock="Top">
+                    <DockPanel Classes="WrapperDockpanel" DockPanel.Dock="Top" x:Name="UsernameBoxContainer" IsVisible="False" >
+                        <TextBlock DockPanel.Dock="Top">Username</TextBlock>
+                        <TextBox DockPanel.Dock="Top" x:Name="UsernameTextBox" Watermark="Username"></TextBox>     
+                    </DockPanel >
+                    <DockPanel Classes="WrapperDockpanel" DockPanel.Dock="Top" x:Name="PasswordBoxContainer" IsVisible="False" >
+                        <TextBlock DockPanel.Dock="Top">Password</TextBlock>
+                        <TextBox DockPanel.Dock="Top" x:Name="PasswordTextBox" Watermark="Password" Classes="revealPasswordButton" PasswordChar="*"></TextBox>
+                    </DockPanel>
+                </DockPanel>
+            </DockPanel>
+            
         </Grid>
         
         <!-- scrape and save -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*" >
-            <Button Grid.Column="1" x:Name="ScrapeBtn" Classes="btn_dark" Content="Scrape" Click="Scrape">
-            </Button>
-            <Button Grid.Column="3" x:Name="SaveBtn" Classes="btn_dark" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase"/>
-            
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,*,Auto,*">
+            <Button Grid.Column="1" x:Name="ScrapeBtn" Content="Scrape" Click="Scrape"/>
+            <Button Grid.Column="3" x:Name="SaveBtn" Content="Save" local:ShowDisabledTooltipExtension.ShowOnDisabled="true" Click="WriteUserInputsToDatabase"/>
         </Grid>
     </Grid>
 </UserControl>
