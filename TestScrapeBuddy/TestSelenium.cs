@@ -80,12 +80,13 @@ public class SeleniumTests
             _driver.Scrape("https://www.google.com", true,new List<string>(), "test", "test", "test", "test");
             
         }
-        catch(LoginException e)
+        catch(SeleniumException e)
         {
-            if (e is MissingUsernamefieldException)
+            if (e.InnerException is MissingUsernamefieldException)
             {
                 Assert.That("No Usernamefield found",Is.EqualTo(e.Message));
             }
+            
         }
         _driver.Quit();
     }

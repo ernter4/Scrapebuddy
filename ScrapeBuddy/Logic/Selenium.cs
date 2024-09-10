@@ -9,6 +9,9 @@ using Avalonia.Controls.Notifications;
 using ScrapeBuddy.Exceptions;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.ViewModels;
+using Splat;
+using MissingFieldException = System.MissingFieldException;
+
 namespace ScrapeBuddy.Logic
 {
     /// <summary>
@@ -46,7 +49,7 @@ namespace ScrapeBuddy.Logic
                 _driver.Navigate().GoToUrl(url);
             }
         }
-        
+
         /// <summary>
         /// Retrieves a web element by its XPath.
         /// </summary>
@@ -54,8 +57,26 @@ namespace ScrapeBuddy.Logic
         /// <returns>The web element found by the specified XPath.</returns>
         public IWebElement GetElementByXPath(string xpath)
         {
-            IWebElement element = _driver.FindElement(By.XPath(xpath));
-            return element;
+            try
+            {
+                IWebElement element = _driver.FindElement(By.XPath(xpath));
+                return element;
+            }
+            catch (Exception ex)
+            {
+                if (ex is NoSuchElementException)
+                {
+                    throw new MissingFieldException($"Missing Field by Xpath {xpath}.");
+                }
+
+                if (xpath is null)
+                {
+                    throw new SeleniumException("Xpath cannot be null");
+                }
+
+                throw new ScrapeFailedException($"Error while scraping for Xpath {xpath}occured");
+
+            }
         }
 
         /// <summary>
@@ -64,9 +85,27 @@ namespace ScrapeBuddy.Logic
         /// <param name="id">The ID of the web element to find.</param>
         /// <returns>The web element found by the specified ID.</returns>
         public IWebElement GetElementById(string id)
-        {  
-            IWebElement element =_driver.FindElement(By.Id(id));
-            return element;
+        {
+            try
+            {
+                IWebElement element = _driver.FindElement(By.Id(id));
+                return element;
+            }
+            catch (Exception ex)
+            {
+                if (ex is NoSuchElementException)
+                {
+                    throw new MissingFieldException($"Missing Field by id {id}.");
+                }
+
+                if (id is null)
+                {
+                    throw new SeleniumException("ID cannot be null");
+                }
+            
+                throw new ScrapeFailedException($"Error while scraping for id {id}occured");
+
+            }
 
         }
 
@@ -84,7 +123,7 @@ namespace ScrapeBuddy.Logic
             usernamefields = Getusernamefields();
             if (usernamefields.Any() == false)
             {
-                throw new MissingPasswordfieldException("No Usernamefield found");
+                throw new LoginException(new MissingUsernamefieldException("No Usernamefield found"));
             }
             usernamefield = usernamefields[0];// gets First Field where the username should be pasted in.
             usernamefield.SendKeys(username);
@@ -97,7 +136,7 @@ namespace ScrapeBuddy.Logic
             
             if (passwordfields.Any() == false)
             {
-                 throw new MissingPasswordfieldException("No Passwordfield found");
+                 throw new LoginException(new  MissingPasswordfieldException("No Passwordfield found"));
             }
 
             passwordfield = passwordfields[0];
@@ -122,17 +161,21 @@ namespace ScrapeBuddy.Logic
         {
             try
             {
-                Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath + " Id: " + id + " Username: " + username + " Password: " + password);
-                
+                Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath +
+                                  " Id: " + id + " Username: " + username + " Password: " + password);
+
                 _driver.Navigate().GoToUrl(url);
-                
+
                 if (login)
                 {
+
                     Login(username, password);
+
+
                 }
-                
+
                 Click(elementstoclick);
-                
+
                 IWebElement element;
                 if (xpath is null)
                 {
@@ -143,17 +186,21 @@ namespace ScrapeBuddy.Logic
                     element = GetElementByXPath(xpath);
                 }
 
-                return element; 
-            }
-            catch (WebDriverException ex)
-            {
-                Console.WriteLine($"WebDriverException during scraping: {ex.Message}");
-                throw new Exception($"Scrape failed for URL {url}: {ex.Message}", ex); 
+                return element;
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception during scraping: {ex.Message}");
-                throw new Exception($"General error during scraping for URL {url}: {ex.Message}", ex); 
+                if (url is null)
+                {
+                    throw new ScrapeFailedException("The URL Cannot be Null");
+                }
+
+                if (ex is WebDriverArgumentException)
+                {
+                    throw new ScrapeFailedException($"Scrape failed for url {url}: URL is invalid", ex);
+                }
+                throw new ScrapeFailedException($"Scrape failed for url {url}",ex);
             }
         }
 
@@ -216,15 +263,23 @@ namespace ScrapeBuddy.Logic
         /// <param name="elementexpaths"></param>
         public void Click(List<string>? elementexpaths)
         {
-            IWebElement element;// the element wich has to be clicked
-            if (elementexpaths is null)
+            try
             {
-                return;
-            } 
-            foreach ( string xpath in elementexpaths)
+                IWebElement element; // the element wich has to be clicked
+                if (elementexpaths is null)
+                {
+                    return;
+                }
+
+                foreach (string xpath in elementexpaths)
+                {
+                    element = GetElementByXPath(xpath);
+                    element.Click();
+                }
+            }
+            catch (Exception ex)
             {
-               element= GetElementByXPath(xpath);
-               element.Click();
+                throw new ClickactionfailedException(ex);
             }
         }
 
