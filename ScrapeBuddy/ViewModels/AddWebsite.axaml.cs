@@ -7,9 +7,12 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.Logic;
+using System.IO;
+
 
 namespace ScrapeBuddy.ViewModels;
 
@@ -31,7 +34,9 @@ public partial class AddWebsite : UserControl
         UsernameTextBox.TextChanged += OnTextboxInputChanged;
         PasswordTextBox.TextChanged += OnTextboxInputChanged;
         SetButtonState(XPathButton, false);
-        SetButtonState(IdButton, true);
+        SetButtonState(IdButton, true); SettingsViewModel.ThemeChanged += SetTheme;
+        SetTheme(null, null);
+        
     }
 
     private string _websiteName;
@@ -352,4 +357,26 @@ public partial class AddWebsite : UserControl
             button.BorderBrush = Brushes.Black;
         }
     }
+    
+    /// <summary>
+    /// Sets the application theme based on the "DarkMode" setting.
+    /// </summary>
+    /// <param name="sender">The event sender (can be null).</param>
+    /// <param name="eventArgs">Event arguments (can be null).</param>
+    private void SetTheme(object? sender, EventArgs eventArgs)
+    {
+        JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+        bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+        if (isDarkMode)
+        {
+            Console.WriteLine("Now its Darkmode");
+            MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+        }
+        else
+        {
+            Console.WriteLine("Now its Lightmode");
+            MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+        }
+    }
+    
 }

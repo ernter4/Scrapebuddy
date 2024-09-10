@@ -11,6 +11,8 @@ using Avalonia.Styling;
 using OpenQA.Selenium;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.Logic;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -66,6 +68,8 @@ namespace ScrapeBuddy.ViewModels
         public RegisteredWebsite()
         {
             InitializeComponent();
+            SettingsViewModel.ThemeChanged += SetTheme;
+            SetTheme(null, null);
             SaveBtn.IsEnabled = IsInputSavable();
             WebsiteNameTextBox.TextChanged += OnTextboxInputChanged;
             WebsiteLinkTextBox.TextChanged += OnTextboxInputChanged;
@@ -570,6 +574,25 @@ namespace ScrapeBuddy.ViewModels
             }
 
             return true;
+        }
+        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
+        private void SetTheme(object? sender, EventArgs eventArgs)
+        {
+            JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+            bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+            if (isDarkMode)
+            {
+                Console.WriteLine("Now its Darkmode");
+            }
+            else
+            {
+                Console.WriteLine("Now its Lightmode");
+            }
         }
     }
 }

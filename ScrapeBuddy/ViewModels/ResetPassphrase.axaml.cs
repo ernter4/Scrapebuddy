@@ -1,5 +1,8 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -15,7 +18,10 @@ namespace ScrapeBuddy.ViewModels
         {
             InitializeComponent();
             this.FindControl<Button>("YesButton").Click += YesButton_Click;
-            this.FindControl<Button>("NoButton").Click += NoButton_Click;
+            this.FindControl<Button>("NoButton").Click += NoButton_Click; 
+            SettingsViewModel.ThemeChanged += SetTheme;
+            SetTheme(null, null);
+            
         }
 
         /// <summary>
@@ -40,6 +46,25 @@ namespace ScrapeBuddy.ViewModels
         private void NoButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             Close(false);
+        }
+        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
+        private void SetTheme(object? sender, EventArgs eventArgs)
+        {
+            JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+            bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+            if (isDarkMode)
+            {
+                Console.WriteLine("Now its Darkmode");
+            }
+            else
+            {
+                Console.WriteLine("Now its Lightmode");
+            }
         }
     }
 }

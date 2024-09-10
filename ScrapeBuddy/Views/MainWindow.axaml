@@ -29,7 +29,7 @@
         
 
         <!-- Linke Seitenleiste -->
-        <DockPanel Grid.Column="0"  Background="Orange">
+        <DockPanel x:Name="Sidebar" Grid.Column="0">
             <!-- Benachrichtigungssymbole oben -->
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Background="Beige">
                 <Button Margin="5" Height="30" x:Name="NotificationsBtn">

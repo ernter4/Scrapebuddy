@@ -8,6 +8,8 @@ using Avalonia.VisualTree;
 using Google.Protobuf;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.Logic;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -21,10 +23,7 @@ namespace ScrapeBuddy.ViewModels
         private bool _isEmailNotificationsEnabled;
         private string? _email;
         private string? _name;
-
-        /// <summary>
-        /// Event triggered when the cancel action is requested.
-        /// </summary>
+        public static event EventHandler ThemeChanged;
         public event EventHandler CancelRequested;
 
         /// <summary>
@@ -33,6 +32,8 @@ namespace ScrapeBuddy.ViewModels
         public SettingsViewModel()
         {
             InitializeComponent();
+            ThemeChanged += SetTheme;
+            SetTheme(null, null);
             _settingsManager = new SettingsManager();
             _settings = _settingsManager.LoadSettings();
             LoadSettings();
@@ -89,6 +90,7 @@ namespace ScrapeBuddy.ViewModels
         private void OnToggleDarkWhiteMode(object sender, RoutedEventArgs args)
         {
             SaveDarkModeSetting();
+            ThemeChanged?.Invoke(null, EventArgs.Empty);
         }
 
         /// <summary>
@@ -152,6 +154,7 @@ namespace ScrapeBuddy.ViewModels
                 DatabaseHandler.DeleteAllTables();
                 Hashing.DeleteHash();
                 _settingsManager.DeleteSettings();
+                _settingsManager.WriteDefaultValues();
             }
         }
 
@@ -210,6 +213,25 @@ namespace ScrapeBuddy.ViewModels
                                  && !string.IsNullOrWhiteSpace(NameTextBox.Text);
 
             SaveButton.IsEnabled = isSaveEnabled;
+        }
+        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
+        private void SetTheme(object? sender, EventArgs eventArgs)
+        {
+            JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+            bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+            if (isDarkMode)
+            {
+                Console.WriteLine("Now its Darkmode");
+            }
+            else
+            {
+                Console.WriteLine("Now its Lightmode");
+            }
         }
     }
 }

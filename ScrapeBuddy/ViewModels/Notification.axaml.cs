@@ -7,6 +7,8 @@ using Avalonia.Layout;
 using System.Timers;
 using Avalonia; 
 using Avalonia.Threading;  
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -20,6 +22,8 @@ namespace ScrapeBuddy.ViewModels
         {
             InitializeComponent();
             _isControlVisible = false; 
+            SettingsViewModel.ThemeChanged += SetTheme;
+            SetTheme(null, null);
         }
 
         /// <summary>
@@ -207,6 +211,25 @@ namespace ScrapeBuddy.ViewModels
             base.OnDetachedFromVisualTree(e);
             _isControlVisible = false; 
             StopNotificationRefreshTimer();  
+        }
+        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
+        private void SetTheme(object? sender, EventArgs eventArgs)
+        {
+            JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+            bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+            if (isDarkMode)
+            {
+                Console.WriteLine("Now its Darkmode");
+            }
+            else
+            {
+                Console.WriteLine("Now its Lightmode");
+            }
         }
     }
 }

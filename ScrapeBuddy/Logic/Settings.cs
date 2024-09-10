@@ -74,5 +74,14 @@ namespace ScrapeBuddy.Logic
             settings.IV = iv;
             SaveSettings(settings);
         }
+        
+        /// <summary>
+        /// Writes the default values to the settings file.
+        /// </summary>
+        public void WriteDefaultValues()
+        {
+            var defaultSettings = new SettingsModel();
+            SaveSettings(defaultSettings);
+        }
     }
 }

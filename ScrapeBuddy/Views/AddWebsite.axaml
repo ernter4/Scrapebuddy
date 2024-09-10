@@ -37,7 +37,7 @@
         </Style>
     </UserControl.Styles>
     
-    <Grid RowDefinitions="Auto, Auto, Auto" Background="{DynamicResource BackgroundDark}">
+    <Grid x:Name="MainGrid" RowDefinitions="Auto, Auto, Auto">
         <!-- cancel and info -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" >
             <Button Grid.Column="0" Classes="btn_dark" IsCancel="True" Click="OnCancelView" Height="35">

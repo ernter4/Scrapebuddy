@@ -4,9 +4,11 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Newtonsoft.Json.Linq;
 using ScrapeBuddy.Logic;
 using ScrapeBuddy.Data;
 using ScrapeBuddy.ViewModels;
+using System.IO;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -33,6 +35,8 @@ namespace ScrapeBuddy.ViewModels
             this.reset = reset;
             this.emailAndName = emailAndName;
             NotificationsView = new NotificationViewModel();
+            SettingsViewModel.ThemeChanged += SetTheme;
+            SetTheme(null, null);
         }
 
         /// <summary>
@@ -132,6 +136,25 @@ namespace ScrapeBuddy.ViewModels
             {
                 criterion.TextBlock.Text = criterion.IsValid ? "✔ " + criterion.TextBlock.Text.Substring(2) : "✘ " + criterion.TextBlock.Text.Substring(2);
                 criterion.TextBlock.Foreground = criterion.IsValid ? Brushes.Green : Brushes.Red;
+            }
+        }
+        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
+        private void SetTheme(object? sender, EventArgs eventArgs)
+        {
+            JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
+            bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
+            if (isDarkMode)
+            {
+                Console.WriteLine("Now its Darkmode");
+            }
+            else
+            {
+                Console.WriteLine("Now its Lightmode");
             }
         }
     }
