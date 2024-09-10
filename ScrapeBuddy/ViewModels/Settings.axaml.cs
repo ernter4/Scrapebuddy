@@ -10,6 +10,8 @@ using ScrapeBuddy.Data;
 using ScrapeBuddy.Logic;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia;
+using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
@@ -23,6 +25,7 @@ namespace ScrapeBuddy.ViewModels
         private bool _isEmailNotificationsEnabled;
         private string? _email;
         private string? _name;
+        private bool Editable;
         public static event EventHandler ThemeChanged;
         public event EventHandler CancelRequested;
 
@@ -61,6 +64,22 @@ namespace ScrapeBuddy.ViewModels
                 _email = null;
                 _name = null;
             }
+
+            Editable = _settings?.EmailNotificationsEnabled ?? false;
+            
+            if (Editable = false)
+            {
+                SaveButton.Content = "Save";
+                EmailTextBox.IsEnabled = true;
+                NameTextBox.IsEnabled = true;
+            }
+            else
+            {
+                SaveButton.Content = "Edit";
+                EmailTextBox.IsEnabled = false;
+                NameTextBox.IsEnabled = false;
+            }
+            
 
             EmailTextBox.Text = _email ?? string.Empty;
             NameTextBox.Text = _name ?? string.Empty;
@@ -114,7 +133,15 @@ namespace ScrapeBuddy.ViewModels
                 _settings.IV = null;
                 _settingsManager.SaveSettings(_settings);
             }
-
+            else
+            {
+                
+                Editable = true;
+                SaveButton.Content = "Save";
+                EmailTextBox.IsEnabled = true;
+                NameTextBox.IsEnabled = true;
+            }
+            
             UpdateSaveButtonState();
         }
 
@@ -123,17 +150,30 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void OnSaveEmailSettings(object sender, RoutedEventArgs args)
         {
-            _settings.EmailNotificationsEnabled = true;
-            _email = EmailTextBox.Text;
-            _name = NameTextBox.Text;
-            Encryption enc = new Encryption(_email, _name);
-            var resultEnc = enc.EncryptStringToBytes_Aes();
+            if (Editable)
+            {
+                _settings.EmailNotificationsEnabled = true;
+                _email = EmailTextBox.Text;
+                _name = NameTextBox.Text;
+                Encryption enc = new Encryption(_email, _name);
+                var resultEnc = enc.EncryptStringToBytes_Aes();
 
-            _settings.Email = resultEnc.encUsername;
-            _settings.Name = resultEnc.encPassword;
-            _settings.IV = resultEnc.IV;
-            _settings.Salt = resultEnc.salt;
-            _settingsManager.SaveSettings(_settings);
+                _settings.Email = resultEnc.encUsername;
+                _settings.Name = resultEnc.encPassword;
+                _settings.IV = resultEnc.IV;
+                _settings.Salt = resultEnc.salt;
+                _settingsManager.SaveSettings(_settings);
+                SaveButton.Content = "Edit";
+                EmailTextBox.IsEnabled = false;
+                NameTextBox.IsEnabled = false;
+            } else
+            {
+                SaveButton.Content = "Save";
+                EmailTextBox.IsEnabled = true;
+                NameTextBox.IsEnabled = true;
+            }
+            
+            Editable = !Editable;
         }
 
         /// <summary>
@@ -208,9 +248,13 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void UpdateSaveButtonState()
         {
-            bool isSaveEnabled = _isEmailNotificationsEnabled 
-                                 && !string.IsNullOrWhiteSpace(EmailTextBox.Text) 
-                                 && !string.IsNullOrWhiteSpace(NameTextBox.Text);
+            bool isSaveEnabled = true;
+            if (Editable)
+            {
+                isSaveEnabled = _isEmailNotificationsEnabled
+                                     && !string.IsNullOrWhiteSpace(EmailTextBox.Text)
+                                     && !string.IsNullOrWhiteSpace(NameTextBox.Text);
+            }
 
             SaveButton.IsEnabled = isSaveEnabled;
         }
@@ -227,10 +271,34 @@ namespace ScrapeBuddy.ViewModels
             if (isDarkMode)
             {
                 Console.WriteLine("Now its Darkmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                Home.Classes.Clear();
+                Home.Classes.Add("btn_white");
+                SaveButton.Classes.Clear();
+                SaveButton.Classes.Add("btn_white");
+                DeleteDatabase.Classes.Clear();
+                DeleteDatabase.Classes.Add("btn_white");
+                ResetPassphrase.Classes.Clear();
+                ResetPassphrase.Classes.Add("btn_white");
+                Title.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
+                DarkModeToggleSwitch.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
+                EmailNotificationsToggleSwitch.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
             }
             else
             {
                 Console.WriteLine("Now its Lightmode");
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                Home.Classes.Clear();
+                Home.Classes.Add("btn_dark");
+                SaveButton.Classes.Clear();
+                SaveButton.Classes.Add("btn_dark");
+                DeleteDatabase.Classes.Clear();
+                DeleteDatabase.Classes.Add("btn_dark");
+                ResetPassphrase.Classes.Clear();
+                ResetPassphrase.Classes.Add("btn_dark");
+                Title.Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+                DarkModeToggleSwitch.Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+                EmailNotificationsToggleSwitch.Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 40));
             }
         }
     }

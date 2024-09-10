@@ -32,7 +32,7 @@
             <TextBlock 
                 x:Name="Title"
                 Text="Notifications" 
-                FontSize="30" 
+                FontSize="38" 
                 FontWeight="Bold"
                 Foreground="White"
                 HorizontalAlignment="Center" 
