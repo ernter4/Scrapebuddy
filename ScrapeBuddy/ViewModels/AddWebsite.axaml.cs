@@ -295,7 +295,7 @@ public partial class AddWebsite : UserControl
         {
             var dockPanel = new DockPanel
             {
-                Margin = new Thickness(0, 5, 0, 0)
+                Margin = new Thickness(10, 5, 0, 0)
             };
         
             var textBox = new TextBox
@@ -303,7 +303,8 @@ public partial class AddWebsite : UserControl
                 Name = $"ClicksTextBox{clickCount}",
                 Watermark = $"XPath Click",
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                Margin = new Thickness(5, 0, 0, 0)
+                Margin = new Thickness(5, 0, 0, 0),
+                Width = 100,
             };
             dockPanel.Children.Add(textBox);
             DockPanel.SetDock(textBox, Dock.Left);
@@ -312,7 +313,8 @@ public partial class AddWebsite : UserControl
                 Name = $"DeleteButton{clickCount}", 
                 Content = "X",
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                Margin = new Thickness(2, 0, 0, 0)
+                Margin = new Thickness(2, 0, 0, 0),
+                Classes = {"btn_dark"},
             };
             deleteButton.Click += (s, args) => ClicksStackPanel.Children.Remove(dockPanel);
             dockPanel.Children.Add(deleteButton);

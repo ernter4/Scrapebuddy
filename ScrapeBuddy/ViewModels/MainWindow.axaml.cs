@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Interactivity;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -30,6 +31,8 @@ namespace ScrapeBuddy.ViewModels
         private NotificationViewModel NotificationsView { get; set; }
         private SettingsViewModel SettingsView { get; set; }
         private RegisteredWebsite RegisteredWebsiteView { get; set; }
+        
+        private MainPageViewModel MainPageView { get; set; }
 
         public static List<WebsiteInfo> StoredUserWebsites { get; set; }
         private bool _isScraping = false;
@@ -50,6 +53,7 @@ namespace ScrapeBuddy.ViewModels
             NotificationsView = new NotificationViewModel();
             RegisteredWebsiteView = new RegisteredWebsite();
             SettingsView = new SettingsViewModel();
+            MainPageView = new MainPageViewModel();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
             CreateNewBtn.Click += (sender, args) => RenderView(sender, args, NewWebsiteView); 
             NotificationsBtn.Click += (sender, args) =>
@@ -69,6 +73,7 @@ namespace ScrapeBuddy.ViewModels
             RegisteredWebsiteView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, RegisteredWebsiteView);
             NotificationsView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, NotificationsView);
             SettingsView.CancelRequested += (sender, args) => OnViewCancelRequested(sender, args, SettingsView);
+            RenderView(sender: MainPageView, args: null, MainPageView);
         }
 
         /// <summary>
@@ -130,6 +135,7 @@ namespace ScrapeBuddy.ViewModels
         private void OnViewCancelRequested(object sender, EventArgs args, Control view)
         {
             MainContent.Children.Remove(view);
+            RenderView(sender, args: null, MainPageView);
             UpdateList();
         }
 
@@ -236,6 +242,8 @@ namespace ScrapeBuddy.ViewModels
             return MainContent.Children.Contains(view);
         }
 
+        
+        
         /// <summary>
         /// Updates the contents of the RegisteredWebsiteListBox based on the text entered in the SearchTextBox.
         /// </summary>

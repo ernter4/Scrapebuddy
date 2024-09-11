@@ -103,12 +103,12 @@
         </DockPanel>
 
         
-        <Grid Grid.Column="1" x:Name="MainContent" >
-            <!-- Dynamically load content in here -->
-        </Grid>
-    </Grid> 
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+          <Grid Grid.Column="1" x:Name="MainContent" >
+              <!-- Dynamically load content in here -->
+          </Grid>
 
-    
-    
-     
+        </ScrollViewer>
+        
+    </Grid>
 </Window>
