@@ -231,17 +231,129 @@ namespace ScrapeBuddy.Data
         
         /// <summary>
         /// Update content for website when it has changed (Scrape.ScrapeItems looks for changes)
-        /// </summary>  
+        /// </summary>
+        /// <param name="id">The id for therecord.</param>
+        /// <param name="content">The new content.</param>
         static public void UpdateContent(int id, string content)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand("UPDATE website_content SET content = @content WHERE id = @id", connection))
+                    {
+                        command.Parameters.AddWithValue("@content", content);
+                        command.Parameters.AddWithValue("@id", id);
+                        int rowsAffected = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+        
+        // <summary>
+        /// Updates  the user record in the database.
+        /// </summary>
+        /// <param name="websiteId">The ID of the associated website.</param>
+        public void UpdateUser(int websiteId)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
-                using (var command = new SqliteCommand("UPDATE website_content SET content = @content WHERE id = @id", connection))
+
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 {
-                    command.Parameters.AddWithValue("@content", content);
-                    command.Parameters.AddWithValue("@id", id);
+                    throw new InvalidOperationException("Username or password cannot be null or empty.");
                 }
+                
+                Encryption enc = new Encryption(username, password);
+                var result = enc.EncryptStringToBytes_Aes();
+                
+                var command = new SqliteCommand(
+                    "UPDATE users SET username = @username, password = @password, salt = @salt, IV = @IV WHERE website_id = @website_id", 
+                    connection
+                );
+                
+                command.Parameters.AddWithValue("@username", result.encUsername);
+                command.Parameters.AddWithValue("@password", result.encPassword);
+                command.Parameters.AddWithValue("@salt", result.salt);
+                command.Parameters.AddWithValue("@IV", result.IV);
+                command.Parameters.AddWithValue("@website_id", websiteId);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine("User updated successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("No user found with the provided website_id.");
+                }
+            }
+        }
+        
+        
+        // <summary>
+        /// Update Website.
+        /// </summary>
+        /// <param name="websiteId">The ID of the associated website.</param>
+        public void UpdateWebsite(int id)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    connection.Open();
+                    
+                    string? serializedClicks = clicks != null ? string.Join(",", clicks) : null;
+                
+                    if (clicks?.Count == 0)
+                    {
+                        serializedClicks = null;
+                    }
+                    
+                    using (var command = new SqliteCommand("UPDATE website_content SET website_name = @websiteName, url = @url, clicks = @clicks, x_path = @xPath, element_id = @elementId, content = @content, login = @login WHERE id = @id", connection))
+                    {
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@websiteName", websiteName ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@url", url ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@clicks", serializedClicks ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@xPath", xPath ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@elementId", elementId ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@content", content ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@login", login ? 1 : 0); 
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                    }
+                    
+                    if (login)
+                    {
+                        using (var checkUserCommand = new SqliteCommand("SELECT COUNT(1) FROM users WHERE website_id = @id", connection))
+                        {
+                            checkUserCommand.Parameters.AddWithValue("@id", id);
+                            
+                            int usersExists = Convert.ToInt32(checkUserCommand.ExecuteScalar());
+
+                            if (usersExists > 0)
+                            {
+                                UpdateUser(id);
+                            }
+                            else
+                            {
+                                CreateUser(id);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
         }
         

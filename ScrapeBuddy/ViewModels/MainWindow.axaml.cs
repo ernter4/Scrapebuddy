@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Interactivity;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Xml;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -144,41 +145,71 @@ namespace ScrapeBuddy.ViewModels
         /// </summary>
         private void SetupTimer()
         {
-            if (_timer != null) 
-            {
-                _timer.Stop();
-                _timer.Elapsed -= OnTimedEvent;
-            }
+            // Stop and dispose of the existing timer if it exists
+            _timer?.Stop();
+            _timer?.Dispose();
 
+            // Create and configure a new timer
             _timer = new Timer
             {
                 Interval = 300000 // 5 minutes
             };
-    
+            
+            // Ensure only one event handler is attached
+            _timer.Elapsed -= OnTimedEvent;
             _timer.Elapsed += OnTimedEvent;
+            
+            _timer.AutoReset = true; // Ensure the timer raises events repeatedly
             _timer.Start();
         }
-        
+
         /// <summary>
         /// Configures and starts the timer for notification events.
         /// </summary>
         private void SetupNotificationsTimer()
         {
-            if (_notificationsTimer != null) 
-            {
-                _notificationsTimer.Stop();
-                _notificationsTimer.Elapsed -= OnNotificationsTimerEvent;
-            }
+            // Stop and dispose of the existing notifications timer if it exists
+            _notificationsTimer?.Stop();
+            _notificationsTimer?.Dispose();
 
+            // Create and configure a new timer
             _notificationsTimer = new Timer
             {
                 Interval = 1000 // 1 second
             };
 
+            // Ensure only one event handler is attached
+            _notificationsTimer.Elapsed -= OnNotificationsTimerEvent;
             _notificationsTimer.Elapsed += OnNotificationsTimerEvent;
+
+            _notificationsTimer.AutoReset = true; // Ensure the timer raises events repeatedly
             _notificationsTimer.Start();
         }
-        
+
+        /// <summary>
+        /// Starts the scraping process when the timer elapses.
+        /// </summary>
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            if (_isScraping) 
+            {
+                Console.WriteLine("Scraping is already in progress, skipping...");
+                return; // Prevent overlapping scrapes
+            }
+
+            _isScraping = true;
+
+            try
+            {
+                Console.WriteLine("Start scraping now");
+                Scrape.ScrapeItems(); // Your scraping logic
+            }
+            finally
+            {
+                _isScraping = false; // Ensure this gets reset even if scraping fails
+            }
+        }
+
         /// <summary>
         /// Updates the Notification symbol.
         /// </summary>
@@ -197,31 +228,6 @@ namespace ScrapeBuddy.ViewModels
                     NotificationBadge.IsVisible = false;
                 }
             });
-        }
-
-
-        /// <summary>
-        /// Starts the scraping process when the timer elapses.
-        /// </summary>
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-            if (_isScraping) 
-            {
-                Console.WriteLine("Scraping is already in progress, skipping...");
-                return; // Prevent overlapping scrapes
-            }
-
-            _isScraping = true;
-    
-            try
-            {
-                Console.WriteLine("Start scraping now");
-                Scrape.ScrapeItems(); // Your scraping logic
-            }
-            finally
-            {
-                _isScraping = false; // Ensure this gets reset even if scraping fails
-            }
         }
 
 

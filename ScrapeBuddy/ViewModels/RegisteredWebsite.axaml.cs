@@ -180,10 +180,11 @@ namespace ScrapeBuddy.ViewModels
         {
             Login = _password != null && _username != null;
             DatabaseHandler website = new DatabaseHandler(WebsiteName, WebsiteLink, ClicksList, XPath, Id, Content, Login, Username, Password);
-            website.CreateWebsiteContent();
+            website.UpdateWebsite(_websiteId);
             SaveBtn.IsEnabled = false;
             LoadWebsiteData(_websiteId);
             IsEditable = false;
+            
         }
 
         /// <summary>
@@ -196,7 +197,9 @@ namespace ScrapeBuddy.ViewModels
             var loadingDialog = new ScrapeDialog();
             StoreClicksData();
             var selenium = new Selenium();
-            Login = _password != null && _username != null;
+            
+            Login = !string.IsNullOrEmpty(PasswordTextBox.Text) && !string.IsNullOrEmpty(UsernameTextBox.Text);
+            Console.WriteLine("Login:" + Login + _password + _username);
             try
             {
                 loadingDialog.Show();
@@ -204,8 +207,20 @@ namespace ScrapeBuddy.ViewModels
                 IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
 
                 loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}", true);
+                if (element.Text == scrapeItem.content)
+                {
+                    Console.WriteLine($"Content is still the same: {element.Text} = {scrapeItem.content}");
+                }
+                else
+                {
+                    DatabaseHandler.UpdateContent(_websiteId, element.Text);
+                    SettingsManager _settingsManager = new SettingsManager();
+                    SettingsModel _settings = _settingsManager.LoadSettings();
+                }
+
                 Scraping = true;
                 Content = element.Text;
+                ContentTextBox.Text = element.Text;
                 if (IsEditable)
                 {
                     SaveBtn.IsEnabled = IsInputSavable();

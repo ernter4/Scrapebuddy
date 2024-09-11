@@ -163,9 +163,6 @@ namespace ScrapeBuddy.Logic
         {
             try
             {
-                Console.WriteLine("Url: " + url + " ElementstoClick: " + elementstoclick + " Xpath: " + xpath +
-                                  " Id: " + id + " Username: " + username + " Password: " + password);
-
                 _driver.Navigate().GoToUrl(url);
 
                 if (login)
@@ -332,6 +329,7 @@ namespace ScrapeBuddy.Logic
                             string _email = resultDec.username;
                             string _name = resultDec.password;
                             Email emailclient = new Email();
+                            Console.WriteLine("Sending email...");
                             emailclient.Send(_email, $"{item.name} had changes", _name,$"Content changed from {item.content} to {element.Text}");
 
                         }

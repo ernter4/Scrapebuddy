@@ -108,7 +108,6 @@ namespace ScrapeBuddy.Logic
             {
                 return null;
             }
-            
             IntPtr bstr = IntPtr.Zero;
             try
             {

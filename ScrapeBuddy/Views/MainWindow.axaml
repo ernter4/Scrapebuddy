@@ -78,9 +78,9 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="{Binding WebsiteName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <Button Grid.Column="1" x:Name="DeleteSettingsBtn" Height="35" Width="20" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="OnDeleteSettingsBtnClick">
-                                    <Path Data="{StaticResource more_vertical_regular}" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
+                                <TextBlock Grid.Column="0" x:Name="TextBlockName" Text="{Binding WebsiteName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1"  Height="35" Width="20" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="OnDeleteSettingsBtnClick">
+                                    <Path Data="{StaticResource more_vertical_regular}" x:Name="DeleteIcon" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
                                     <Button.Flyout>
                                         <MenuFlyout>
                                             <MenuItem Click="RenderDeleteWebsiteView" Tag="{Binding}">
@@ -94,7 +94,6 @@
                                         </MenuFlyout>
                                     </Button.Flyout>
                                 </Button>
-
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

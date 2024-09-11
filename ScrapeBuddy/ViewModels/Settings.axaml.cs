@@ -251,8 +251,7 @@ namespace ScrapeBuddy.ViewModels
             bool isSaveEnabled = true;
             if (Editable)
             {
-                isSaveEnabled = _isEmailNotificationsEnabled
-                                     && !string.IsNullOrWhiteSpace(EmailTextBox.Text)
+                isSaveEnabled =  !string.IsNullOrWhiteSpace(EmailTextBox.Text)
                                      && !string.IsNullOrWhiteSpace(NameTextBox.Text);
             }
 
