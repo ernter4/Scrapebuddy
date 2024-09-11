@@ -90,10 +90,7 @@ namespace ScrapeBuddy.ViewModels
 
                     await splashScreen.InitApp();
 
-                    var mainWindow = new MainWindow
-                    {
-                        DataContext = new MainWindow(),
-                    };
+                    var mainWindow = new MainWindow();
                     mainWindow.Show();
                     Close();
                     splashScreen.Close();

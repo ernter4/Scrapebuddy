@@ -15,6 +15,7 @@ using System.Xml;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
+using OpenQA.Selenium;
 
 
 namespace ScrapeBuddy.ViewModels
@@ -24,7 +25,7 @@ namespace ScrapeBuddy.ViewModels
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Timer _timer;
+        private Timer _scrapingTimer;
         private Timer _notificationsTimer;
         private int? _selectedWebsiteId;
         
@@ -36,7 +37,6 @@ namespace ScrapeBuddy.ViewModels
         private MainPageViewModel MainPageView { get; set; }
 
         public static List<WebsiteInfo> StoredUserWebsites { get; set; }
-        private bool _isScraping = false;
 
         /// <summary>
         /// Initializes the window and its components.
@@ -44,15 +44,15 @@ namespace ScrapeBuddy.ViewModels
         public MainWindow()
         {
             InitializeComponent();
-            SetupTimer();
             SetupNotificationsTimer();
+            SetupScrapingTimer();
             SettingsViewModel.ThemeChanged += SetTheme;
             SetTheme(null, null);
             NotificationsTextBlock.Text = DatabaseHandler.GetNotificationsUndismissed().ToString();
-            
+            UpdateList();
             NewWebsiteView = new AddWebsite();
             NotificationsView = new NotificationViewModel();
-            RegisteredWebsiteView = new RegisteredWebsite();
+            RegisteredWebsiteView = new RegisteredWebsite(this);
             SettingsView = new SettingsViewModel();
             MainPageView = new MainPageViewModel();
             StoredUserWebsites = GetUsersWebsites(new DatabaseHandler());
@@ -140,76 +140,28 @@ namespace ScrapeBuddy.ViewModels
             UpdateList();
         }
 
-        /// <summary>
-        /// Configures and starts the timer for scraping events.
-        /// </summary>
-        private void SetupTimer()
-        {
-            // Stop and dispose of the existing timer if it exists
-            _timer?.Stop();
-            _timer?.Dispose();
-
-            // Create and configure a new timer
-            _timer = new Timer
-            {
-                Interval = 300000 // 5 minutes
-            };
-            
-            // Ensure only one event handler is attached
-            _timer.Elapsed -= OnTimedEvent;
-            _timer.Elapsed += OnTimedEvent;
-            
-            _timer.AutoReset = true; // Ensure the timer raises events repeatedly
-            _timer.Start();
-        }
-
+        
+        
         /// <summary>
         /// Configures and starts the timer for notification events.
         /// </summary>
         private void SetupNotificationsTimer()
         {
-            // Stop and dispose of the existing notifications timer if it exists
-            _notificationsTimer?.Stop();
-            _notificationsTimer?.Dispose();
+            if (_notificationsTimer != null) 
+            {
+                _notificationsTimer.Stop();
+                _notificationsTimer.Elapsed -= OnNotificationsTimerEvent;
+            }
 
-            // Create and configure a new timer
             _notificationsTimer = new Timer
             {
                 Interval = 1000 // 1 second
             };
 
-            // Ensure only one event handler is attached
-            _notificationsTimer.Elapsed -= OnNotificationsTimerEvent;
             _notificationsTimer.Elapsed += OnNotificationsTimerEvent;
-
-            _notificationsTimer.AutoReset = true; // Ensure the timer raises events repeatedly
             _notificationsTimer.Start();
         }
-
-        /// <summary>
-        /// Starts the scraping process when the timer elapses.
-        /// </summary>
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-            if (_isScraping) 
-            {
-                Console.WriteLine("Scraping is already in progress, skipping...");
-                return; // Prevent overlapping scrapes
-            }
-
-            _isScraping = true;
-
-            try
-            {
-                Console.WriteLine("Start scraping now");
-                Scrape.ScrapeItems(); // Your scraping logic
-            }
-            finally
-            {
-                _isScraping = false; // Ensure this gets reset even if scraping fails
-            }
-        }
-
+        
         /// <summary>
         /// Updates the Notification symbol.
         /// </summary>
@@ -229,16 +181,36 @@ namespace ScrapeBuddy.ViewModels
                 }
             });
         }
-
-
+        
         /// <summary>
-        /// Disposes of the timer when the window closes.
+        /// Configures and starts the timer for scraping events.
         /// </summary>
-        protected override void OnClosed(EventArgs e)
+        private void SetupScrapingTimer()
         {
-            _timer?.Dispose();
-            base.OnClosed(e);
+            // Stop and dispose of the existing timer if it exists
+            _scrapingTimer?.Stop();
+            _scrapingTimer?.Dispose();
+
+            // Create and configure a new timer
+            _scrapingTimer = new Timer
+            {
+                Interval = 360000, // 2 minutes in milliseconds
+                AutoReset = true,
+            };
+            _scrapingTimer.Elapsed += OnScrapingTimerElapsed;
+            _scrapingTimer.Enabled = true;
         }
+        
+        /// <summary>
+        /// Starts Scraping every 5 Minutes
+        /// </summary>
+        private async void OnScrapingTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine("Start scraping now");
+            Scrape.ScrapeItems(); // Your scraping logic
+        }
+        
+        
 
         /// <summary>
         /// Checks if a view is already displayed in the main content area.
@@ -307,6 +279,8 @@ namespace ScrapeBuddy.ViewModels
             {
                 RootControl.Foreground = Brushes.White;
                 Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarDark"];
+                RegisteredWebsiteListBox.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarDark"];
+                RegisteredWebsiteListBox.Foreground = Brushes.White;
                 CreateNewBtn.Classes.Remove("btn_dark");
                 CreateNewBtn.Classes.Add("btn_white");
                 SettingsBtn.Classes.Remove("btn_dark");
@@ -318,6 +292,8 @@ namespace ScrapeBuddy.ViewModels
             {
                 RootControl.Foreground = Brushes.Black;
                 Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarLight"];
+                RegisteredWebsiteListBox.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarLight"];
+                RegisteredWebsiteListBox.Foreground = Brushes.Black;
                 CreateNewBtn.Classes.Remove("btn_white");
                 CreateNewBtn.Classes.Add("btn_dark");
                 SettingsBtn.Classes.Remove("btn_white");

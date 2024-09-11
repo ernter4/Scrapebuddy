@@ -59,13 +59,14 @@ namespace ScrapeBuddy.ViewModels
         public bool Login;
         private List<string>? ClicksList;
         public event EventHandler CancelRequested;
+        private MainWindow mainPageView;
 
-        
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisteredWebsite"/> class.
         /// </summary>
-        public RegisteredWebsite()
+        /// <param name="mainPageView"></param>
+        public RegisteredWebsite(MainWindow mainPageView)
         {
             InitializeComponent();
             SettingsViewModel.ThemeChanged += SetTheme;
@@ -77,6 +78,7 @@ namespace ScrapeBuddy.ViewModels
             UsernameTextBox.TextChanged += OnTextboxInputChanged;
             PasswordTextBox.TextChanged += OnTextboxInputChanged;
             EditBtn.Click += OnEnableEdit;
+            mainPageView = mainPageView;
         }
 
         /// <summary>
@@ -184,7 +186,7 @@ namespace ScrapeBuddy.ViewModels
             SaveBtn.IsEnabled = false;
             LoadWebsiteData(_websiteId);
             IsEditable = false;
-            
+            mainPageView.UpdateList();
         }
 
         /// <summary>
