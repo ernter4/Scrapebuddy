@@ -16,9 +16,9 @@ using Avalonia.Media;
 
 namespace ScrapeBuddy.ViewModels
 {
-
-
-    
+    /// <summary>
+    /// Main Page Window with short Tutorial
+    /// </summary>
     public partial class MainPageViewModel : UserControl
     {
         public MainPageViewModel()
@@ -28,7 +28,11 @@ namespace ScrapeBuddy.ViewModels
             SetTheme(null, null);
         }
 
-        
+        /// <summary>
+        /// Sets the application theme based on the "DarkMode" setting.
+        /// </summary>
+        /// <param name="sender">The event sender (can be null).</param>
+        /// <param name="eventArgs">Event arguments (can be null).</param>
         private void SetTheme(object? sender, EventArgs eventArgs)
         {
             JObject settingsJson = JObject.Parse(File.ReadAllText(@"Data/Settings.json"));
@@ -69,3 +73,4 @@ namespace ScrapeBuddy.ViewModels
     }
    
 }
+
