@@ -39,7 +39,7 @@ public class MissingWebFieldException :ScrapeFailedException
 
 public class ClickactionfailedException : ScrapeFailedException
 {
-    public ClickactionfailedException(Exception innerException):base("A click Action failed: " +innerException.Message,innerException) {}
+    public ClickactionfailedException(Exception innerException):base("A click Action failed: " + innerException.Message) {}
 }
 
 /// <summary>Represents an exception for missing username field during login.</summary>

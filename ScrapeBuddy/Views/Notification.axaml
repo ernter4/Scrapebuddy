@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
     
         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
-            <Button Grid.Column="0" IsCancel="True" Classes="btn_dark" Click="OnCancelView" Height="35" x:Name="Home" Margin="5">
+            <Button Grid.Column="0" IsCancel="True" Classes="btn_dark" Click="OnCancelView" Height="35" x:Name="HomeBtn" Margin="5">
                 <Path Data="{StaticResource home_regular}" Stretch="Uniform" />
             </Button>
             <Button Content="Delete All" Classes="btn_dark" x:Name="DeleteAll" Click="OnDeleteAll" Grid.Column="2" Height="35" Margin="5" />

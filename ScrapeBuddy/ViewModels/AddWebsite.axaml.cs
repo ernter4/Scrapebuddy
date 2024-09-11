@@ -128,7 +128,7 @@ public partial class AddWebsite : UserControl
         {
             loadingDialog.Show();
             IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
-            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}" , true);
+            loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}", true);
             Scraping = true;
             Content = element.Text;
             SaveBtn.IsEnabled = true;
@@ -378,24 +378,8 @@ public partial class AddWebsite : UserControl
         bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
         if (isDarkMode)
         {
+            RootControl.Foreground = Brushes.White;
             MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
-            ScrapeBtn.Classes.Remove("btn_white");
-            ScrapeBtn.Classes.Add("btn_dark");
-            SaveBtn.Classes.Remove("btn_white");
-            SaveBtn.Classes.Add("btn_dark");
-            HomeBtn.Classes.Remove("btn_white");
-            HomeBtn.Classes.Add("btn_dark");
-            ClearBtn.Classes.Remove("btn_white");
-            ClearBtn.Classes.Add("btn_dark");
-            ClicksButton.Classes.Remove("btn_white");
-            ClicksButton.Classes.Add("btn_dark");
-            CredentialsBtn.Classes.Remove("btn_white");
-            CredentialsBtn.Classes.Add("btn_dark");
-
-        }
-        else
-        {
-            MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
             ScrapeBtn.Classes.Remove("btn_dark");
             ScrapeBtn.Classes.Add("btn_white");
             SaveBtn.Classes.Remove("btn_dark");
@@ -408,6 +392,24 @@ public partial class AddWebsite : UserControl
             ClicksButton.Classes.Add("btn_white");
             CredentialsBtn.Classes.Remove("btn_dark");
             CredentialsBtn.Classes.Add("btn_white");
+
+        }
+        else
+        {
+            RootControl.Foreground = Brushes.Black;
+            MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+            ScrapeBtn.Classes.Remove("btn_white");
+            ScrapeBtn.Classes.Add("btn_dark");
+            SaveBtn.Classes.Remove("btn_white");
+            SaveBtn.Classes.Add("btn_dark");
+            HomeBtn.Classes.Remove("btn_white");
+            HomeBtn.Classes.Add("btn_dark");
+            ClearBtn.Classes.Remove("btn_white");
+            ClearBtn.Classes.Add("btn_dark");
+            ClicksButton.Classes.Remove("btn_white");
+            ClicksButton.Classes.Add("btn_dark");
+            CredentialsBtn.Classes.Remove("btn_white");
+            CredentialsBtn.Classes.Add("btn_dark");
         }
     }
     

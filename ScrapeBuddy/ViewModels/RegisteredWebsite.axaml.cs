@@ -190,7 +190,7 @@ namespace ScrapeBuddy.ViewModels
 
                 IWebElement element = await Task.Run(() => selenium.Scrape(WebsiteLink, Login, ClicksList, XPath, Id, Username, Password));
 
-                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}", true);
+                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} succeeded: {element.Text}",true);
                 Scraping = true;
                 Content = element.Text;
                 if (IsEditable)
@@ -204,7 +204,7 @@ namespace ScrapeBuddy.ViewModels
                 DatabaseHandler notification = new DatabaseHandler($"Scraping for {WebsiteName} failed: ", ex.Message);
                 notification.CreateNotification();
 
-                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}", false);
+                loadingDialog.UpdateMessage($"Scraping for {WebsiteName} failed: {ex.Message}",false);
             }
             finally
             {
@@ -561,24 +561,8 @@ namespace ScrapeBuddy.ViewModels
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
             {
+                RootControl.Foreground = Brushes.White;
                 MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
-                ScrapeBtn.Classes.Remove("btn_white");
-                ScrapeBtn.Classes.Add("btn_dark");
-                SaveBtn.Classes.Remove("btn_white");
-                SaveBtn.Classes.Add("btn_dark");
-                HomeBtn.Classes.Remove("btn_white");
-                HomeBtn.Classes.Add("btn_dark");
-                EditBtn.Classes.Remove("btn_white");
-                EditBtn.Classes.Add("btn_dark");
-                ClicksButton.Classes.Remove("btn_white");
-                ClicksButton.Classes.Add("btn_dark");
-                CredentialsBtn.Classes.Remove("btn_white");
-                CredentialsBtn.Classes.Add("btn_dark");
-
-            }
-            else
-            {
-                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
                 ScrapeBtn.Classes.Remove("btn_dark");
                 ScrapeBtn.Classes.Add("btn_white");
                 SaveBtn.Classes.Remove("btn_dark");
@@ -591,6 +575,24 @@ namespace ScrapeBuddy.ViewModels
                 ClicksButton.Classes.Add("btn_white");
                 CredentialsBtn.Classes.Remove("btn_dark");
                 CredentialsBtn.Classes.Add("btn_white");
+
+            }
+            else
+            {
+                RootControl.Foreground = Brushes.Black;
+                MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"]; ;
+                ScrapeBtn.Classes.Remove("btn_white");
+                ScrapeBtn.Classes.Add("btn_dark");
+                SaveBtn.Classes.Remove("btn_white");
+                SaveBtn.Classes.Add("btn_dark");
+                HomeBtn.Classes.Remove("btn_white");
+                HomeBtn.Classes.Add("btn_dark");
+                EditBtn.Classes.Remove("btn_white");
+                EditBtn.Classes.Add("btn_dark");
+                ClicksButton.Classes.Remove("btn_white");
+                ClicksButton.Classes.Add("btn_dark");
+                CredentialsBtn.Classes.Remove("btn_white");
+                CredentialsBtn.Classes.Add("btn_dark");
             }
         }
     }

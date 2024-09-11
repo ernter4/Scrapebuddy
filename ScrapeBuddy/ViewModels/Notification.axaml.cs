@@ -272,8 +272,8 @@ namespace ScrapeBuddy.ViewModels
             {
                 Console.WriteLine("Now its Darkmode");
                 MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
-                Home.Classes.Clear();
-                Home.Classes.Add("btn_white");
+                HomeBtn.Classes.Clear();
+                HomeBtn.Classes.Add("btn_white");
                 Dismiss.Classes.Clear();
                 Dismiss.Classes.Add("btn_white");
                 DeleteAll.Classes.Clear();
@@ -286,8 +286,8 @@ namespace ScrapeBuddy.ViewModels
             {
                 Console.WriteLine("Now its Lightmode");
                 MainGrid.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
-                Home.Classes.Clear();
-                Home.Classes.Add("btn_dark");
+                HomeBtn.Classes.Clear();
+                HomeBtn.Classes.Add("btn_dark");
                 DeleteAll.Classes.Clear();
                 DeleteAll.Classes.Add("btn_dark");
                 Dismiss.Classes.Clear();

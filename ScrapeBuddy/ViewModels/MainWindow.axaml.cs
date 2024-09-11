@@ -291,13 +291,25 @@ namespace ScrapeBuddy.ViewModels
             bool isDarkMode = settingsJson["DarkMode"].ToObject<bool>();
             if (isDarkMode)
             {
-                Console.WriteLine("Now its Darkmode");
-                Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundDark"];
+                RootControl.Foreground = Brushes.White;
+                Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarDark"];
+                CreateNewBtn.Classes.Remove("btn_dark");
+                CreateNewBtn.Classes.Add("btn_white");
+                SettingsBtn.Classes.Remove("btn_dark");
+                SettingsBtn.Classes.Add("btn_white");
+                NotificationsBtn.Classes.Remove("btn_dark");
+                NotificationsBtn.Classes.Add("btn_white");
             }
             else
             {
-                Console.WriteLine("Now its Lightmode");
-                Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundLight"];
+                RootControl.Foreground = Brushes.Black;
+                Sidebar.Background = (SolidColorBrush)Application.Current.Resources["BackgroundSidebarLight"];
+                CreateNewBtn.Classes.Remove("btn_white");
+                CreateNewBtn.Classes.Add("btn_dark");
+                SettingsBtn.Classes.Remove("btn_white");
+                SettingsBtn.Classes.Add("btn_dark");
+                NotificationsBtn.Classes.Remove("btn_white");
+                NotificationsBtn.Classes.Add("btn_dark");
             }
         }
     }

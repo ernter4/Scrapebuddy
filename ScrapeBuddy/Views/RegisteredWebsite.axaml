@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:ScrapeBuddy.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ScrapeBuddy.ViewModels.RegisteredWebsite"
+             x:Name="RootControl"
              x:DataType="local:RegisteredWebsite">
     
     <UserControl.Resources>
@@ -56,10 +57,10 @@
     <Grid RowDefinitions="Auto, *, Auto" x:Name="MainGrid">
         <!-- cancel and info -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" >
-            <Button x:Name="HomeBtn" Grid.Column="0" IsCancel="True" Click="OnCancelView" Height="35">
-                <Path Data="{StaticResource home_regular}" Fill="Black" Stretch="Uniform"></Path>
+            <Button Grid.Column="0" IsCancel="True" Classes="btn_dark" Click="OnCancelView" Height="35" x:Name="HomeBtn" Margin="5">
+                <Path Data="{StaticResource home_regular}" Stretch="Uniform" />
             </Button>
-            <ToggleButton x:Name="EditBtn" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  Height="35">
+            <ToggleButton x:Name="EditBtn" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Height="35">
                 <Panel>
                     <PathIcon Classes="audio-on" Data="{StaticResource edit_off_regular}"></PathIcon>
                     <PathIcon Classes="audio-mute" Data="{StaticResource edit_regular}"></PathIcon>
