@@ -13,7 +13,7 @@ public class Email
         _smtp.Port = 587;
         
         _smtp.UseDefaultCredentials = false;
-        _smtp.Credentials = new NetworkCredential("MS_GMrTSX@trial-v69oxl5m0wk4785k.mlsender.net ","y3XeRiZxdEr8S7op");
+        _smtp.Credentials = new NetworkCredential("MS_T59Hzo@trial-351ndgwp9xxlzqx8.mlsender.net","t4oSEsMk76d9bqMC");
         _smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
         _smtp.Timeout = 20000;
         _smtp.EnableSsl = true;
@@ -29,7 +29,7 @@ public class Email
     public void Send(string recipientEmailAdress, string subject,string username, string message)
     {
         MailMessage mailMessage = new MailMessage();
-        mailMessage.From = (new MailAddress("MS_uBBvo2@trial-v69oxl5m0wk4785k.mlsender.net"));
+        mailMessage.From = (new MailAddress("MS_T59Hzo@trial-351ndgwp9xxlzqx8.mlsender.net"));
         mailMessage.To.Add(new MailAddress(recipientEmailAdress));
         mailMessage.Subject = subject;
         String messageBody = "Hello " + username + ",<br><br><br>";
